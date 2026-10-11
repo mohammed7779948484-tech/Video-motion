@@ -1,0 +1,451 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template id="environment-template">
+      <style>
+        /* SYRAZEN · environment — the night street around the shop. No text. Track 1, under the street scene. */
+        #env-root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #121728; isolation: isolate; }
+        #env-root .env-layer { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+        #env-root .env-box { position: absolute; }
+        #env-root .env-glow { position: absolute; border-radius: 50%; pointer-events: none; }
+        #env-root .env-screen { mix-blend-mode: screen; }
+
+        /* 1. Sky — base night, dusk, dawn: radial light only (no full-frame linear gradients) */
+        #env-sky-base {
+          background:
+            radial-gradient(ellipse 1500px 980px at 540px -160px, #0b0e18 0%, rgba(11, 14, 24, 0.55) 50%, rgba(11, 14, 24, 0) 100%),
+            radial-gradient(ellipse 980px 230px at 540px 668px, rgba(40, 49, 88, 0.75) 0%, rgba(40, 49, 88, 0.3) 55%, rgba(40, 49, 88, 0) 100%),
+            #121728;
+        }
+        #env-sky-dusk {
+          background:
+            radial-gradient(ellipse 600px 190px at 540px 662px, rgba(250, 182, 104, 0.92) 0%, rgba(206, 108, 64, 0.8) 30%, rgba(194, 100, 62, 0.32) 64%, rgba(194, 100, 62, 0) 100%),
+            radial-gradient(ellipse 1150px 360px at 540px 680px, rgba(140, 66, 76, 0.6) 0%, rgba(90, 53, 80, 0.38) 55%, rgba(60, 46, 90, 0) 100%),
+            radial-gradient(ellipse 1400px 700px at 540px 760px, rgba(52, 52, 104, 0.62) 0%, rgba(43, 52, 102, 0.26) 60%, rgba(43, 52, 102, 0) 100%);
+        }
+        #env-sky-dawn {
+          opacity: 0;
+          background:
+            radial-gradient(ellipse 1500px 900px at 540px -180px, rgba(30, 41, 74, 0.85) 0%, rgba(30, 41, 74, 0.45) 55%, rgba(30, 41, 74, 0.24) 80%, rgba(30, 41, 74, 0.12) 100%),
+            #34456e;
+        }
+        #env-sky-dawnglow {
+          opacity: 0;
+          background:
+            radial-gradient(ellipse 560px 150px at 810px 680px, rgba(255, 222, 160, 0.95) 0%, rgba(242, 166, 90, 0.85) 26%, rgba(214, 120, 72, 0.42) 60%, rgba(194, 100, 62, 0) 100%),
+            radial-gradient(ellipse 1250px 175px at 560px 700px, rgba(214, 120, 72, 0.5) 0%, rgba(150, 96, 110, 0.25) 55%, rgba(150, 96, 110, 0) 100%);
+        }
+        #env-grain { opacity: 0.55; background-repeat: repeat; background-size: 256px 256px; }
+
+        /* 2. Stars */
+        #env-root .env-star { position: absolute; border-radius: 50%; background: #f6efe3; }
+        #env-root .env-sparkle { position: absolute; width: 18px; height: 18px; }
+        #env-root .env-sparkle-bar {
+          position: absolute; left: 8px; top: 0; width: 2px; height: 18px; border-radius: 1px;
+          background: radial-gradient(ellipse at 50% 50%, rgba(246, 239, 227, 0.95) 0%, rgba(246, 239, 227, 0) 70%);
+        }
+        #env-root .env-sparkle-bar.env-rot { transform: rotate(90deg); }
+
+        /* 3. Moon (geometry.moon: cx 900, cy 250, r 44) */
+        #env-moon-wrap { position: absolute; left: 700px; top: 50px; width: 400px; height: 400px; opacity: 0; }
+        #env-moon-haze {
+          position: absolute; left: -180px; top: -180px; width: 760px; height: 760px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(246, 239, 227, 0.1) 0%, rgba(246, 239, 227, 0.04) 40%, rgba(246, 239, 227, 0) 70%);
+        }
+        #env-moon-halo {
+          position: absolute; left: 0; top: 0; width: 400px; height: 400px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(246, 239, 227, 0.42) 0%, rgba(246, 239, 227, 0.22) 14%, rgba(246, 239, 227, 0.08) 32%, rgba(246, 239, 227, 0) 62%);
+        }
+        #env-moon {
+          position: absolute; left: 156px; top: 156px; width: 88px; height: 88px; border-radius: 50%;
+          box-shadow: 0 0 18px 4px rgba(246, 239, 227, 0.35);
+          background:
+            radial-gradient(circle at 31% 35%, rgba(214, 200, 178, 0.6) 0, rgba(214, 200, 178, 0.6) 8.5px, rgba(214, 200, 178, 0) 9.5px),
+            radial-gradient(circle at 64% 64%, rgba(214, 200, 178, 0.55) 0, rgba(214, 200, 178, 0.55) 6px, rgba(214, 200, 178, 0) 7px),
+            radial-gradient(circle at 68% 26%, rgba(214, 200, 178, 0.5) 0, rgba(214, 200, 178, 0.5) 4px, rgba(214, 200, 178, 0) 5px),
+            radial-gradient(circle at 36% 70%, rgba(214, 200, 178, 0.5) 0, rgba(214, 200, 178, 0.5) 3.5px, rgba(214, 200, 178, 0) 4.5px),
+            radial-gradient(circle at 36% 34%, #fffcf5 0%, #f6efe3 52%, #e4d8c3 100%);
+        }
+
+        /* 4. Sun (geometry.sun: cx 820, cy 760 -> 610, r 80) — flat, wide bloom keeps the headline sky dark */
+        #env-sun-wrap { position: absolute; left: 520px; top: 460px; width: 600px; height: 600px; opacity: 0; }
+        #env-sun-bloom2 {
+          position: absolute; left: -250px; top: 170px; width: 1100px; height: 260px; border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(242, 166, 90, 0.34) 0%, rgba(242, 166, 90, 0.1) 45%, rgba(242, 166, 90, 0) 70%);
+        }
+        #env-sun-bloom {
+          position: absolute; left: 20px; top: 190px; width: 560px; height: 220px; border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(255, 214, 150, 0.62) 0%, rgba(255, 181, 71, 0.3) 35%, rgba(255, 181, 71, 0) 70%);
+        }
+        #env-sun {
+          position: absolute; left: 220px; top: 220px; width: 160px; height: 160px; border-radius: 50%;
+          background: radial-gradient(circle at 50% 42%, #fff4de 0%, #ffe0a8 38%, #ffc277 72%, #f2a65a 100%);
+        }
+
+        /* 5. Skyline + the plain wall the shop always covers */
+        #env-skyline { position: absolute; left: 0; top: 500px; width: 1080px; height: 280px; }
+        #env-backwall { position: absolute; left: 140px; top: 640px; width: 800px; height: 920px; background: #161b2d; }
+
+        /* 6. Neighbour windows */
+        #env-root .env-win { position: absolute; overflow: hidden; background: #131828; }
+        #env-root .env-wf { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+        #env-root .env-win-sheen { background: linear-gradient(150deg, rgba(120, 140, 200, 0) 30%, rgba(120, 140, 200, 0.09) 46%, rgba(120, 140, 200, 0) 60%); }
+        #env-root .env-win-lit {
+          opacity: 0;
+          background: radial-gradient(ellipse 90% 95% at 50% 78%, rgba(255, 200, 120, 0.95) 0%, rgba(255, 170, 80, 0.8) 55%, rgba(214, 122, 64, 0.7) 100%);
+        }
+        #env-root .env-win-curtain { position: absolute; top: 0; width: 30%; height: 100%; background: rgba(110, 56, 34, 0.55); }
+        #env-root .env-win-dawn {
+          opacity: 0;
+          background: linear-gradient(162deg, rgba(242, 166, 90, 0) 18%, rgba(242, 166, 90, 0.55) 46%, rgba(255, 222, 160, 0.32) 58%, rgba(242, 166, 90, 0) 78%);
+        }
+        #env-root .env-win-frame { box-shadow: inset 0 0 0 3px #313954; }
+        #env-root .env-win-transom { position: absolute; left: 0; width: 100%; height: 4px; background: #313954; }
+        #env-root .env-room { opacity: 0; }
+
+        /* 8. Street lamp */
+        #env-lamp-svg { position: absolute; left: 0; top: 960px; width: 160px; height: 620px; }
+        #env-lamp-light, #env-lamp-glass-on { opacity: 0; }
+        #env-lamp-cone {
+          position: absolute; left: -40px; top: 1046px; width: 220px; height: 520px;
+          clip-path: polygon(94px 0, 118px 0, 212px 100%, 0 100%);
+          background: linear-gradient(180deg, rgba(255, 181, 71, 0.13) 0%, rgba(255, 181, 71, 0.045) 60%, rgba(255, 181, 71, 0.07) 100%);
+        }
+        #env-lamp-pool { left: -110px; top: 1500px; width: 380px; height: 190px; background: radial-gradient(ellipse, rgba(255, 181, 71, 0.5) 0%, rgba(255, 181, 71, 0.18) 45%, rgba(255, 181, 71, 0) 70%); }
+        #env-lamp-refl { left: 20px; top: 1640px; width: 100px; height: 240px; background: radial-gradient(ellipse, rgba(255, 181, 71, 0.26) 0%, rgba(255, 181, 71, 0) 70%); }
+        #env-lamp-halo {
+          left: -94px; top: 870px; width: 320px; height: 320px;
+          background: radial-gradient(circle, rgba(255, 214, 150, 0.62) 0%, rgba(255, 181, 71, 0.26) 22%, rgba(255, 181, 71, 0.08) 45%, rgba(255, 181, 71, 0) 70%);
+        }
+
+        /* Searcher phones: bright core + cool inner halo + warm outer halo */
+        #env-root .env-ph { position: absolute; width: 0; height: 0; }
+        #env-root .env-ph-on { position: absolute; left: 0; top: 0; opacity: 0; }
+        #env-root .env-ph-tilt { position: absolute; left: -6px; top: -9px; width: 12px; height: 18px; transform: rotate(-9deg); }
+        #env-root .env-ph-core {
+          position: absolute; left: 0; top: 0; width: 12px; height: 18px; border-radius: 3px; background: #fbf8f1;
+          box-shadow: 0 0 4px 1px rgba(240, 246, 255, 0.9), 0 0 12px 4px rgba(220, 232, 255, 0.45);
+        }
+        #env-root .env-ph-h2 { left: -110px; top: -110px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(255, 196, 110, 0.36) 0%, rgba(255, 181, 71, 0.15) 38%, rgba(255, 181, 71, 0) 70%); }
+        #env-root .env-ph-h1 {
+          left: -64px; top: -64px; width: 128px; height: 128px;
+          background: radial-gradient(circle, rgba(238, 244, 255, 0.9) 0%, rgba(214, 226, 255, 0.45) 22%, rgba(190, 210, 255, 0.12) 52%, rgba(190, 210, 255, 0) 72%);
+        }
+        #env-root .env-ph-floor { left: -90px; top: 6px; width: 180px; height: 44px; background: radial-gradient(ellipse, rgba(214, 226, 255, 0.3) 0%, rgba(214, 226, 255, 0) 70%); }
+
+        /* 7. Competitor glow (geometry.competitorGlow: x 1080, y 1040) */
+        #env-comp-glow {
+          left: 700px; top: 660px; width: 760px; height: 760px;
+          background: radial-gradient(circle, rgba(255, 210, 140, 0.8) 0%, rgba(255, 181, 71, 0.5) 20%, rgba(255, 150, 60, 0.18) 50%, rgba(255, 150, 60, 0) 72%);
+        }
+        #env-comp-edge { left: 1020px; top: 760px; width: 120px; height: 820px; background: radial-gradient(ellipse, rgba(255, 196, 110, 0.45) 0%, rgba(255, 181, 71, 0) 70%); }
+        #env-comp-floor { left: 760px; top: 1530px; width: 640px; height: 180px; background: radial-gradient(ellipse, rgba(255, 181, 71, 0.5) 0%, rgba(255, 181, 71, 0.16) 45%, rgba(255, 181, 71, 0) 70%); }
+
+        /* Website light on the street after the turn */
+        #env-web-floor { left: -10px; top: 1510px; width: 1100px; height: 170px; background: radial-gradient(ellipse, rgba(246, 239, 227, 0.34) 0%, rgba(246, 239, 227, 0.12) 45%, rgba(246, 239, 227, 0) 70%); }
+        #env-web-road { left: 160px; top: 1640px; width: 760px; height: 220px; background: radial-gradient(ellipse, rgba(246, 239, 227, 0.12) 0%, rgba(246, 239, 227, 0) 70%); }
+        #env-root .env-web-side { top: 760px; width: 160px; height: 820px; background: radial-gradient(ellipse, rgba(246, 239, 227, 0.16) 0%, rgba(246, 239, 227, 0) 70%); }
+
+        /* 9. Grade — soft-light warmth clipped to the neighbours + street (never the headline sky) */
+        #env-comp, #env-web, #env-hush, #env-grade-dawn, #env-rims { opacity: 0; }
+        #env-hush { background: #05070d; }
+        #env-root .env-grade {
+          mix-blend-mode: soft-light;
+          clip-path: polygon(0 346px, 146px 346px, 146px 1556px, 934px 1556px, 934px 392px, 1080px 392px, 1080px 1920px, 0 1920px);
+        }
+        #env-grade-dusk { background: radial-gradient(ellipse 1100px 1300px at 540px 640px, rgba(194, 100, 62, 0.55) 0%, rgba(194, 100, 62, 0.25) 60%, rgba(194, 100, 62, 0.12) 100%); }
+        #env-grade-dawn { background: radial-gradient(ellipse 1100px 1300px at 820px 640px, rgba(242, 166, 90, 0.6) 0%, rgba(242, 166, 90, 0.34) 50%, rgba(194, 100, 62, 0.2) 100%); }
+        #env-vignette { background: radial-gradient(ellipse 820px 1250px at 540px 900px, rgba(5, 7, 12, 0) 58%, rgba(5, 7, 12, 0.42) 88%, rgba(5, 7, 12, 0.6) 100%); }
+      </style>
+
+      <div id="env-root" data-composition-id="environment" data-width="1080" data-height="1920">
+        <div id="env-sky" class="env-layer">
+          <div id="env-sky-base" class="env-layer"></div><div id="env-sky-dusk" class="env-layer"></div><div id="env-sky-dawn" class="env-layer"></div>
+          <div id="env-sky-dawnglow" class="env-layer"></div><div id="env-grain" class="env-layer"></div>
+        </div>
+        <div id="env-stars" class="env-layer"></div>
+        <div id="env-moon-wrap" data-layout-allow-overflow><div id="env-moon-haze" data-layout-allow-overflow></div><div id="env-moon-halo"></div><div id="env-moon"></div></div>
+        <div id="env-sun-wrap" data-layout-allow-overflow><div id="env-sun-bloom2" data-layout-allow-overflow></div><div id="env-sun-bloom" data-layout-allow-overflow></div><div id="env-sun"></div></div>
+        <div id="env-clouds" class="env-layer"></div>
+        <svg id="env-skyline" viewBox="0 500 1080 280" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="env-birds" class="env-layer"></div><div id="env-backwall"></div><div id="env-bldgs" class="env-layer"></div><div id="env-street" class="env-layer"></div>
+        <div id="env-lamp" class="env-layer">
+          <div id="env-lamp-light" class="env-layer"><div id="env-lamp-breath" class="env-layer">
+            <div id="env-lamp-cone" class="env-screen" data-layout-allow-overflow></div><div id="env-lamp-pool" class="env-glow env-screen" data-layout-allow-overflow></div>
+            <div id="env-lamp-refl" class="env-glow env-screen"></div><div id="env-lamp-halo" class="env-glow env-screen" data-layout-allow-overflow></div>
+          </div></div>
+          <svg id="env-lamp-svg" viewBox="0 960 160 620" xmlns="http://www.w3.org/2000/svg" fill="#11141f">
+            <rect x="119" y="1002" width="8" height="540" /><rect x="115" y="1488" width="16" height="10" rx="2" /><rect x="117" y="1052" width="12" height="6" rx="2" />
+            <path d="M112 1560 L134 1560 L130 1524 L116 1524 Z" /><circle cx="123" cy="999" r="5" />
+            <path d="M123 1004 C123 986 104 980 86 988 L66 996" stroke="#11141f" stroke-width="5" fill="none" stroke-linecap="round" />
+            <path d="M118 1030 C108 1026 100 1012 108 1004 C114 998 120 1004 116 1010" stroke="#11141f" stroke-width="3" fill="none" stroke-linecap="round" />
+            <rect x="64" y="994" width="4" height="12" /><path d="M48 1018 L84 1018 L74 1006 L58 1006 Z" /><path d="M53 1019 L79 1019 L75 1050 L57 1050 Z" fill="#3a3a4a" />
+            <g id="env-lamp-glass-on"><path d="M53 1019 L79 1019 L75 1050 L57 1050 Z" fill="#ffc46e" /><path d="M58 1022 L74 1022 L72 1046 L60 1046 Z" fill="#fff0cf" /></g>
+            <rect x="65" y="1019" width="2" height="31" opacity="0.55" /><rect x="55" y="1049" width="22" height="6" rx="1" /><circle cx="66" cy="1060" r="3" />
+          </svg>
+        </div>
+        <div id="env-phones" class="env-layer"></div>
+        <div id="env-comp" class="env-layer"><div id="env-comp-breath" class="env-layer">
+          <div id="env-comp-glow" class="env-glow env-screen" data-layout-allow-overflow></div><div id="env-comp-edge" class="env-glow env-screen" data-layout-allow-overflow></div><div id="env-comp-floor" class="env-glow env-screen" data-layout-allow-overflow></div>
+        </div></div>
+        <div id="env-web" class="env-layer">
+          <div id="env-web-floor" class="env-glow env-screen" data-layout-allow-overflow></div><div id="env-web-road" class="env-glow env-screen"></div>
+          <div class="env-glow env-screen env-web-side" style="left: 60px"></div><div class="env-glow env-screen env-web-side" style="left: 860px"></div>
+        </div>
+        <div id="env-grade-dusk" class="env-layer env-grade"></div><div id="env-grade-dawn" class="env-layer env-grade"></div>
+        <div id="env-rims" class="env-layer"></div><div id="env-hush" class="env-layer"></div><div id="env-vignette" class="env-layer"></div>
+      </div>
+
+      <script>
+        (function () {
+          var S = window.SYRAZEN, KIT = window.SYRAZEN_KIT, C = S.cues, GEO = S.geometry;
+          var END = S.scenes.environment.end - S.scenes.environment.start; // 12 s — this scene starts at 0, so local time == film time
+          var NF0 = C.nightFall[0], NF1 = C.nightFall[1], SR0 = C.sunrise[0], SR1 = C.sunrise[1], SVGNS = "http://www.w3.org/2000/svg";
+          function byId(id) { return document.getElementById(id); }
+          function el(p, cls, css) { var d = document.createElement("div"); d.className = cls || ""; if (css) d.style.cssText = css; p.appendChild(d); return d; }
+          function box(p, x, y, w, h, bg, extra) { return el(p, "env-box", "left:" + x + "px;top:" + y + "px;width:" + w + "px;height:" + h + "px;background:" + bg + ";" + (extra || "")); }
+          function boxes(p, list) { list.forEach(function (b) { box.apply(null, [p].concat(b)); }); }
+          function svg(p, tag, a) { var n = document.createElementNS(SVGNS, tag); for (var k in a) n.setAttribute(k, a[k]); p.appendChild(n); return n; }
+
+          // One paused timeline, fromTo only, absolute (film) times. The first tween per element+property renders
+          // immediately (that is the t=0 state); every later one has immediateRender:false, so seeking is order-independent.
+          var tl = gsap.timeline({ paused: true }), seen = new Map(), NONPROP = { duration: 1, ease: 1, yoyo: 1, repeat: 1, onUpdate: 1, immediateRender: 1, transformOrigin: 1 };
+          function T(t, from, to, at) {
+            var rec = seen.get(t) || {}, fresh = true;
+            for (var k in to) if (!NONPROP[k]) { if (rec[k]) fresh = false; rec[k] = 1; }
+            seen.set(t, rec); if (!("immediateRender" in to)) to.immediateRender = fresh; if (!to.ease) to.ease = "sine.inOut";
+            tl.fromTo(t, from, to, at);
+          }
+          function fade(t, a, b, dur, at, ease) { T(t, { opacity: a }, { opacity: b, duration: dur, ease: ease }, at); }
+          // finite yoyo "breath": an even number of half-cycles, so it always lands back on `from` before `until`
+          function breathe(t, from, to, start, until, half) {
+            var n = Math.floor((until - start) / (2 * half));
+            if (n >= 1) { to.duration = half; to.yoyo = true; to.repeat = 2 * n - 1; T(t, from, to, start); }
+          }
+
+          // ── 1. SKY: dusk glow sinks and fades with nightfall; dawn sky + horizon glow bloom at sunrise
+          var dusk = byId("env-sky-dusk");
+          T(dusk, { y: 0 }, { y: 34, duration: NF1 + 0.2, ease: "power1.in" }, 0);
+          fade(dusk, 1, 0, NF1 - NF0 + 0.2, NF0);
+          fade(byId("env-sky-dawn"), 0, 1, SR1 - SR0, SR0);
+          T(byId("env-sky-dawnglow"), { opacity: 0, scaleX: 0.8 }, { opacity: 1, scaleX: 1, duration: SR1 - SR0 + 0.3, ease: "power1.out", transformOrigin: "810px 680px" }, SR0 + 0.1);
+          (function () { // sky-only grain: seeded noise tile, offset stepped at 12 fps from a seeded table
+            var g = byId("env-grain"), cv = document.createElement("canvas"), gr = KIT.rng(91371), orng = KIT.rng(4410);
+            cv.width = cv.height = 256;
+            var cx = cv.getContext("2d"), img = cx.createImageData(256, 256), steps = Math.round(END * 12), offs = [], proxy = { p: 0 };
+            for (var i = 0, v, c; i < 65536; i++) { // light specks dimmer than dark ones: grain never lifts the headline sky
+              v = gr(); c = v > 0.5 ? 255 : 0; img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = c; img.data[i * 4 + 3] = Math.round(Math.abs(v - 0.5) * 2 * (c ? 22 : 40));
+            }
+            cx.putImageData(img, 0, 0);
+            g.style.backgroundImage = "url(" + cv.toDataURL("image/png") + ")";
+            for (var s = 0; s <= steps; s++) offs.push(Math.floor(orng() * 256) + "px " + Math.floor(orng() * 256) + "px");
+            g.style.backgroundPosition = offs[0];
+            T(proxy, { p: 0 }, { p: steps, duration: END, ease: "none", onUpdate: function () { g.style.backgroundPosition = offs[Math.min(steps, Math.max(0, Math.floor(proxy.p)))]; } }, 0);
+          })();
+
+          // ── 2. STARS: ~40 seeded, fade in highest-first during nightfall, a third twinkle (finite), out at sunrise
+          (function () {
+            var layer = byId("env-stars"), r = KIT.rng(20261011), m = GEO.moon, hz = GEO.headlineZone, n = 0, guard = 0;
+            while (n < 42 && guard++ < 4000) {
+              var x = 24 + r() * 1032, y = 120 + r() * 500, sz = 1.5 + r() * 1.5, base = 0.4 + r() * 0.5, tw = r(), ph = r();
+              if (Math.hypot(x - m.cx, y - m.cy) < 95 || (x < 150 && y > 300) || (x > 930 && y > 390)) continue;
+              if (x > hz.x && x < hz.x + hz.w && y > hz.y - 10 && y < hz.y + hz.h + 10) base *= 0.7;
+              var d = el(layer, "env-star", "left:" + (x - sz / 2).toFixed(1) + "px;top:" + (y - sz / 2).toFixed(1) + "px;width:" + sz.toFixed(2) + "px;height:" + sz.toFixed(2) + "px;opacity:0");
+              fade(d, 0, base, 0.6, NF0 + 0.25 + ((y - 120) / 500) * 0.95 + ph * 0.3, "power1.out");
+              if (n++ % 3 === 0) breathe(d, { opacity: base }, { opacity: base * 0.22 }, 2.8 + ph * 0.9, SR0 - 0.2, 0.55 + tw * 0.5);
+            }
+            [[236, 140, 0.9], [748, 148, 1.15], [430, 252, 0.75]].forEach(function (p, i) {
+              var w = el(layer, "env-sparkle", "left:" + (p[0] - 9) + "px;top:" + (p[1] - 9) + "px;opacity:0");
+              el(w, "env-sparkle-bar"); el(w, "env-sparkle-bar env-rot"); el(w, "env-star", "left:7px;top:7px;width:4px;height:4px;opacity:0.95");
+              fade(w, 0, 1, 0.7, NF0 + 0.5 + i * 0.35, "power1.out");
+              breathe(w, { scale: 1, rotation: 0 }, { scale: 0.45, rotation: 25 }, 2.7 + i * 0.4, SR0 - 0.2, p[2]);
+            });
+            fade(layer, 1, 0, 0.95, SR0, "power1.in");
+          })();
+
+          // ── 3. MOON rises a little and fades in with nightfall, drifts, fades at sunrise. 4. SUN rises behind the roofs.
+          var moon = byId("env-moon-wrap"), sun = byId("env-sun-wrap"), rise = GEO.sun.cyTo - GEO.sun.cyFrom; // -150 → top edge 530 (< 525 never)
+          fade(moon, 0, 1, 1.3, NF0 + 0.1, "power1.out"); T(moon, { y: 18 }, { y: 0, duration: 1.5, ease: "power2.out" }, NF0 + 0.1);
+          T(moon, { y: 0 }, { y: -12, duration: SR0 + 0.9 - (NF0 + 1.6), ease: "none" }, NF0 + 1.6);
+          fade(moon, 1, 0, 0.8, SR0, "power1.in");
+          breathe(byId("env-moon-halo"), { opacity: 1, scale: 1 }, { opacity: 0.78, scale: 1.07 }, 2.6, SR0 + 0.4, 1.5);
+          fade(sun, 0, 1, 1.1, SR0, "power1.out"); T(sun, { y: 0 }, { y: rise + 5, duration: SR1 - SR0, ease: "power1.out" }, SR0);
+          T(sun, { y: rise + 5 }, { y: rise, duration: END - SR1, ease: "none" }, SR1);
+          breathe(byId("env-sun-bloom"), { opacity: 1, scale: 1 }, { opacity: 0.8, scale: 1.06 }, SR0 + 1.2, END, 0.75);
+
+          // ── CLOUDS: flat-vector pill clouds drifting all film; dusk underside → night → moonlit rim → lit dawn bodies
+          (function () {
+            var layer = byId("env-clouds");
+            [ // x, y, drift, pills [dx, dy, w, h], dawn-lit body colour (null: stays dark), moonlit rim
+              [150, 150, 46, [[0, 18, 280, 24], [50, 4, 150, 26], [150, 0, 110, 24]], "#5b5a84", 0],
+              [560, 110, 34, [[0, 14, 250, 20], [40, 0, 120, 22]], "#57577f", 0],
+              [796, 274, 30, [[0, 6, 240, 12], [66, 0, 110, 12]], null, 1],
+              [90, 548, 40, [[0, 10, 420, 18], [90, 0, 200, 18]], "#6a5a78", 0],
+              [560, 592, 36, [[0, 6, 380, 16], [120, 0, 160, 16]], "#6e5c76", 0]
+            ].forEach(function (c) {
+              var wrap = el(layer, "env-box", "left:" + c[0] + "px;top:" + c[1] + "px");
+              function skin(col, oy, op) { // one colour pass of the cloud's pills
+                var s = el(wrap, "env-box", "left:0;top:" + oy + "px;opacity:" + op); c[3].forEach(function (p) { box(s, p[0], p[1], p[2], p[3], col, "border-radius:" + p[3] / 2 + "px"); }); return s;
+              }
+              var rimDusk = skin("#d0744a", 4, 1), rimDawn = c[4] && skin("#f2a65a", 4, 0), rimMoon = c[5] && skin("rgba(246,239,227,0.6)", -3, 0);
+              skin("#1a2036", 0, 0.92);
+              var bodyDusk = skin("#3f3552", 0, 1), bodyDawn = c[4] && skin(c[4], 0, 0);
+              T(wrap, { x: 0 }, { x: c[2], duration: END, ease: "none" }, 0);
+              fade(rimDusk, 1, 0, 1.5, NF0); fade(bodyDusk, 1, 0, 1.5, NF0);
+              if (rimMoon) { fade(rimMoon, 0, 1, 1.2, NF0 + 0.6, "power1.out"); fade(rimMoon, 1, 0, 0.8, SR0, "power1.in"); }
+              if (bodyDawn) { fade(bodyDawn, 0, 1, 1.8, SR0 + 0.3); fade(rimDawn, 0, 1, 1.6, SR0 + 0.5); }
+            });
+          })();
+
+          // ── 5. FAR SKYLINE: hazy far stratum + night-700 near stratum (low gap where the sun rises), tiny warm windows
+          var skyRim;
+          (function () {
+            var s = byId("env-skyline"), far = svg(s, "g", { fill: "#1c2236", opacity: "0.55" }), near = svg(s, "g", { fill: "#1c2236" });
+            var rimN = svg(s, "g", { fill: "#2a3150" }), wr = KIT.rng(777);
+            skyRim = svg(s, "g", { fill: "#f2a65a", opacity: "0" });
+            function rects(g, list) { list.forEach(function (b) { svg(g, "rect", { x: b[0], y: b[2], width: b[1], height: 780 - b[2] }); }); }
+            rects(far, [[150, 70, 592], [220, 50, 600], [270, 60, 580], [330, 70, 594], [400, 50, 584], [450, 70, 600], [520, 60, 588], [580, 70, 598], [650, 60, 604], [710, 40, 618], [880, 60, 606]]);
+            var NEAR = [[140, 44, 606], [184, 56, 584], [240, 46, 614], [286, 40, 596], [326, 34, 572], [360, 58, 602], [418, 40, 620], [458, 56, 592],
+              [514, 48, 610], [562, 44, 596], [606, 50, 622], [656, 40, 606], [696, 40, 628], [736, 170, 636], [906, 40, 612]];
+            rects(near, NEAR);
+            NEAR.forEach(function (b) { svg(rimN, "rect", { x: b[0], y: b[2], width: b[1], height: 2 }); svg(skyRim, "rect", { x: b[0], y: b[2] - 1, width: b[1], height: 2.5 }); });
+            svg(far, "rect", { x: 296, y: 556, width: 3, height: 26 });
+            svg(near, "polygon", { points: "333,572 343,546 353,572" }); svg(near, "path", { d: "M464 592 A22 22 0 0 1 508 592 Z" }); // spire, dome
+            [[342, 532, 2, 16], [485, 562, 2, 10], [198, 566, 24, 14], [200, 578, 3, 8], [217, 578, 3, 8], [583, 574, 2, 22], [576, 582, 16, 2], [616, 612, 30, 12]]
+              .forEach(function (b) { svg(near, "rect", { x: b[0], y: b[1], width: b[2], height: b[3] }); });
+            [[196, 600], [208, 612], [250, 626], [298, 606], [338, 590], [346, 610], [372, 616], [470, 606], [490, 618], [526, 622], [574, 606], [624, 630], [666, 616], [916, 624], [928, 632], [300, 624]]
+              .forEach(function (p, i) { // a third lit at dusk, the rest come on as night falls; most go out at dawn; two blink
+                var w = svg(s, "rect", { x: p[0], y: p[1], width: 4, height: 5, fill: "#ffb547", opacity: "0" }), lvl = 0.55 + wr() * 0.4;
+                fade(w, i % 3 === 0 ? lvl : 0, lvl, 0.12, i % 3 === 0 ? 0 : NF0 + 0.3 + wr() * 1.6, "power1.out");
+                if (i === 5 || i === 10) { var tb = 4.4 + wr() * 2.4; fade(w, lvl, 0, 0.1, tb, "none"); fade(w, 0, lvl, 0.1, tb + 1.1, "none"); }
+                if (i % 4 !== 1) fade(w, lvl, 0, 0.12, SR0 + 0.6 + wr() * 1.6, "power1.in");
+              });
+          })();
+
+          // ── DAWN BIRDS: three tiny silhouettes cross from behind the left neighbour to behind the right one
+          (function () {
+            var flock = el(byId("env-birds"), "env-box", "left:60px;top:540px");
+            [[0, 0, 1], [26, 10, 0.85], [-18, 16, 0.75]].forEach(function (b, i) {
+              var holder = box(flock, b[0], b[1], 16, 8, "none"), sv = svg(holder, "svg", { viewBox: "0 0 16 8", width: 16 * b[2], height: 8 * b[2] });
+              svg(sv, "path", { d: "M1 6 Q4.5 1.5 8 5.5 Q11.5 1.5 15 6", stroke: "#1a1f33", "stroke-width": "1.8", fill: "none", "stroke-linecap": "round" });
+              breathe(holder, { scaleY: 1 }, { scaleY: 0.3, transformOrigin: "50% 70%" }, SR0 + 0.6 + i * 0.05, END, 0.13 + i * 0.015);
+            });
+            T(flock, { x: 0, y: 0 }, { x: 920, y: -26, duration: END - (SR0 + 0.6), ease: "none" }, SR0 + 0.6);
+          })();
+
+          // ── 6. NEIGHBOURS: left (x 0-140, top ~350) and right (x 940-1080, top ~410), night-600 with ledges and window grids
+          var B = byId("env-bldgs"), W = {}, AO = "rgba(8,10,18,0.4)", LEDGE = "box-shadow: inset 0 2px 0 #384062, 0 4px 0 rgba(8,10,18,0.28)";
+          var CORNICE = "box-shadow: inset 0 3px 0 #3b4466, 0 6px 0 rgba(8,10,18,0.35)";
+          var GROOVES = "repeating-linear-gradient(180deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 26px,#1c2133 26px,#1c2133 28px)";
+          function makeWindow(key, x, y, arch, curtain) {
+            var w = 84, h = 104, rad = arch ? "42px 42px 3px 3px" : "3px";
+            box(B, x - 5, y - 11, w + 10, 11, "#2e3551", arch ? "border-radius:48px 48px 0 0" : "");
+            var g = box(B, x, y, w, h, "#131828", "border-radius:" + rad); g.className = "env-win"; el(g, "env-wf env-win-sheen");
+            var lit = el(g, "env-wf env-win-lit"), dawn = el(g, "env-wf env-win-dawn"), room = el(g, "env-wf env-room");
+            el(lit, "env-win-curtain", curtain + ":0"); el(g, "env-win-transom", "top:" + (arch ? 42 : 28) + "px"); el(g, "env-wf env-win-frame", "border-radius:" + rad);
+            box(B, x - 7, y + h, w + 14, 8, "#363e5c", "box-shadow:0 5px 0 rgba(8,10,18,0.3)");
+            W[key] = { lit: lit, dawn: dawn, room: room, x: x, y: y };
+          }
+          boxes(B, [ // left: body, quoins, shadow edge, chimney, antenna, cornice + dentils
+            [0, 352, 140, 1208, "#262c42"], [120, 380, 20, 1040, "repeating-linear-gradient(180deg,#2d3451 0px,#2d3451 34px,#20263a 34px,#20263a 37px)"], [136, 352, 4, 1208, AO],
+            [16, 316, 26, 34, "#20263a"], [12, 310, 34, 8, "#2a3150"], [66, 266, 3, 84, "#20263a"], [56, 282, 23, 2, "#20263a"], [60, 296, 15, 2, "#20263a"],
+            [0, 346, 146, 20, "#30375a", CORNICE], [0, 366, 140, 8, "repeating-linear-gradient(90deg,#20263a 0px,#20263a 7px,rgba(0,0,0,0) 7px,rgba(0,0,0,0) 14px)"]]);
+          [424, 569, 714, 859, 1004, 1149, 1294].forEach(function (ry, i) { if (i) box(B, 0, ry - 30, 140, 9, "#2c3350", LEDGE); makeWindow("L" + i, 28, ry, false, i % 2 ? "left" : "right"); });
+          boxes(B, [ // left ground floor: rusticated base, doorway with panels and transom, step
+            [0, 1418, 140, 142, "#222839"], [0, 1418, 140, 142, GROOVES], [0, 1412, 140, 8, "#2c3350", LEDGE], [34, 1448, 72, 112, "#0f1320", "border-radius:3px 3px 0 0"],
+            [42, 1478, 56, 82, "#1a2033", "border-radius:2px"], [48, 1488, 20, 30, "#161b2c"], [72, 1488, 20, 30, "#161b2c"], [42, 1456, 56, 16, "#141a2b"], [28, 1552, 84, 8, "#2e3550"],
+            // right: body, pilaster, shadow edge, rooftop water tower, parapet, cornice
+            [940, 412, 140, 1148, "#262c42"], [940, 430, 18, 1130, "#2b3250"], [940, 412, 4, 1148, AO], [1008, 372, 4, 24, "#181d2e"], [1052, 372, 4, 24, "#181d2e"],
+            [1010, 384, 46, 2, "#181d2e"], [998, 326, 66, 50, "#1e2438", "border-radius:6px 6px 3px 3px"], [998, 340, 66, 2, "#161b2b"], [998, 358, 66, 2, "#161b2b"],
+            [992, 300, 78, 28, "#1e2438", "clip-path: polygon(50% 0, 100% 100%, 0 100%)"], [952, 396, 128, 16, "#232940"], [948, 392, 132, 5, "#2e3550"], [934, 412, 146, 18, "#30375a", CORNICE]]);
+          [470, 615, 760, 905, 1050, 1195].forEach(function (ry, i) { if (i) box(B, 940, ry - 32, 140, 9, "#2c3350", LEDGE); makeWindow("R" + i, 968, ry, true, i % 2 ? "right" : "left"); });
+          boxes(B, [ // right ground floor: closed roller shutter under a little awning
+            [940, 1330, 140, 230, "#222839"], [940, 1324, 140, 8, "#2c3350", LEDGE], [950, 1360, 130, 18, "#1c2133", "clip-path: polygon(0 0,100% 0,100% 100%,10px 100%)"],
+            [964, 1380, 116, 180, "repeating-linear-gradient(180deg,#2b3149 0px,#2b3149 7px,#22283c 7px,#22283c 9px)"], [964, 1546, 116, 14, "#1c2133"]]);
+          // window light plan — L0/R0 sit beside the headline zone and stay dark
+          [["L1", 0.85, 0, 1.55, SR0 + 1.55], ["R3", 0.8, 0, 2.05, null], ["R4", 0.75, 0, 1.8, SR0 + 1.15], ["L6", 0.8, 0, 2.3, SR0 + 0.65], ["L3", 0.38, 0, null, null], ["R1", 0.34, 2.6, null, null]]
+            .forEach(function (p) { // [window, level, on (0 = lit at first frame), off at nightfall, back on at dawn]
+              var lit = W[p[0]].lit; fade(lit, p[2] ? 0 : p[1], p[1], 0.15, p[2], "power1.out");
+              if (p[3]) fade(lit, p[1], 0, 0.14, p[3], "power1.in"); if (p[4]) fade(lit, 0, 0.85, 0.14, p[4], "power1.out");
+            });
+          fade(W.L3.lit, 0.38, 0.8, 0.6, SR0 + 0.9); fade(W.R1.lit, 0.34, 0.85, 0.5, SR0 + 1.4);
+          ["L1", "L3", "L4", "L6", "R1", "R3", "R4", "L2", "L5", "R2", "R5"].forEach(function (k, i) { fade(W[k].dawn, 0, 0.75, 1.4, SR0 + 0.6 + (i % 4) * 0.12); });
+
+          // ── 8. STREET: sidewalk with joints converging to eye level, curb, road with worn lane paint, manhole, hydrant
+          (function () {
+            var St = byId("env-street"), js = svg(St, "svg", { viewBox: "0 1560 1080 64", style: "position:absolute;left:0;top:1560px;width:1080px;height:64px" });
+            box(St, 0, 1560, 1080, 62, "#2a3048"); St.appendChild(js); box(St, 0, 1560, 1080, 8, "rgba(10,12,22,0.45)");
+            for (var xj = 78, k = (1622 - 1080) / (1560 - 1080); xj <= 1000; xj += 92) svg(js, "line", { x1: xj, y1: 1562, x2: 540 + (xj - 540) * k, y2: 1622, stroke: "#20263a", "stroke-width": "2.5" });
+            svg(js, "line", { x1: 0, y1: 1590, x2: 1080, y2: 1590, stroke: "#242a40", "stroke-width": "2" });
+            boxes(St, [
+              [0, 1622, 1080, 8, "#3a4160"], [0, 1630, 1080, 16, "#1b2032"], [300, 1632, 64, 12, "repeating-linear-gradient(90deg,#0c0f19 0px,#0c0f19 5px,#1b2032 5px,#1b2032 9px)"],
+              [0, 1646, 1080, 274, "#151a2b"], [0, 1646, 1080, 7, "rgba(6,8,14,0.6)"], [180, 1712, 210, 46, "#171d30", "border-radius:10px"], [690, 1868, 300, 40, "#13182a", "border-radius:12px"],
+              [0, 1678, 1080, 4, "#2a3150"], [760, 1832, 140, 30, "#10131f", "border-radius:50%"], [772, 1836, 116, 22, "#1b2033", "border-radius:50%"], [784, 1840, 92, 14, "#141827", "border-radius:50%"],
+              [1000, 1562, 24, 40, "#4e352b", "border-radius:6px 6px 2px 2px"], [996, 1572, 32, 7, "#6b4a3c", "border-radius:3px"], [1004, 1554, 16, 10, "#6b4a3c", "border-radius:5px 5px 0 0"],
+              [996, 1600, 32, 6, "#3a2820", "border-radius:2px"], [0, 1556, 140, 6, AO], [940, 1556, 140, 6, AO]]);
+            for (var xd = 10; xd < 1000; xd += 230) box(St, xd, 1788, 120, 9, "#3b4363", "opacity:0.6;border-radius:2px");
+            for (var xe = 20; xe < 1000; xe += 290) box(St, xe, 1900, 160, 14, "#2c3350", "opacity:0.55;border-radius:3px");
+            var sheen = box(St, 180, 1680, 900, 120, "radial-gradient(ellipse,rgba(242,166,90,0.28) 0%,rgba(242,166,90,0) 70%)", "border-radius:50%;opacity:0;mix-blend-mode:screen");
+            fade(sheen, 0, 1, 1.6, SR0 + 0.5);
+          })();
+
+          // ── LAMP: flickers on as the shop goes dark, glows all night (bounded breath), switches off softly after sunrise
+          (function () {
+            var light = byId("env-lamp-light"), glass = byId("env-lamp-glass-on"), on = NF0 + 0.05, off = 9.6;
+            function lv(a, b, dur, at, ease) { fade(light, a, b, dur, at, ease || "none"); fade(glass, a, b, dur, at, ease || "none"); }
+            lv(0, 0.6, 0.05, on); lv(0.6, 0.12, 0.06, on + 0.08); lv(0.12, 1, 0.35, on + 0.18, "power2.out");
+            lv(1, 0.45, 0.06, off); lv(0.45, 0.85, 0.06, off + 0.1); lv(0.85, 0, 0.55, off + 0.2, "power2.in");
+            breathe(byId("env-lamp-breath"), { opacity: 1 }, { opacity: 0.84 }, on + 0.6, off - 0.05, 1.3);
+          })();
+
+          // ── 6b. SEARCHERS: a phone glow lights at each searchPings cue, breathes, dims through the hush,
+          //        comes back as the pings reach the website (pingsArrive), goes out at sunrise. Window searchers light their room.
+          (function () {
+            var layer = byId("env-phones"), A = C.pingsArrive, hostWin = { s1: "L2", s2: "R2", s3: "L5", s4: "R5" };
+            var relight = [A[0], A[1], A[2], A[3], A[3] + 0.2], DIM = 0.16, OFF = SR1 - 0.15;
+            GEO.searchers.forEach(function (s, i) {
+              var on = el(el(layer, "env-ph", "left:" + s.x + "px;top:" + s.y + "px"), "env-ph-on"), br = el(on, "env-box");
+              var h2 = el(br, "env-glow env-screen env-ph-h2"), h1 = el(br, "env-glow env-screen env-ph-h1");
+              if (s.side === "bottom") el(br, "env-glow env-screen env-ph-floor");
+              var core = el(el(on, "env-ph-tilt"), "env-ph-core"), w = W[hostWin[s.id]];
+              var t0 = C.searchPings[i], tDim = C.hush[0] - 0.05 + i * 0.04, tR = relight[i], tOff = OFF + i * 0.06;
+              fade(on, 0, 1, 0.22, t0, "power2.out");
+              T(core, { scale: 0.3 }, { scale: 1, duration: 0.34, ease: "back.out(2.4)" }, t0);
+              T(h2, { scale: 0.45 }, { scale: 1, duration: 0.6, ease: "power2.out" }, t0);
+              T(h1, { scale: 0.6 }, { scale: 1, duration: 0.4, ease: "power2.out" }, t0);
+              fade(on, 1, DIM, 0.45, tDim, "power2.inOut"); fade(on, DIM, 1, 0.3, tR, "power2.out"); fade(on, 1, 0, 0.4, tOff, "power1.in");
+              T(core, { scale: 0.6 }, { scale: 1, duration: 0.3, ease: "back.out(2.4)" }, tR);
+              if (w) { // the screen faintly lights the dark room around the searcher
+                w.room.style.background = "radial-gradient(circle at " + (s.x - w.x) + "px " + (s.y - w.y) + "px, rgba(196,212,255,0.34) 0%, rgba(196,212,255,0.1) 40%, rgba(196,212,255,0) 75%)";
+                fade(w.room, 0, 1, 0.35, t0 + 0.04, "power1.out"); fade(w.room, 1, 0.2, 0.45, tDim, "power2.inOut");
+                fade(w.room, 0.2, 1, 0.3, tR, "power2.out"); fade(w.room, 1, 0, 0.4, tOff, "power1.in");
+              }
+              breathe(br, { opacity: 1, scale: 1 }, { opacity: 0.74, scale: 0.92 }, t0 + 0.6, tOff + 0.4, 0.9 + i * 0.13);
+            });
+          })();
+
+          // ── 7. COMPETITOR swells at the right edge, breathes, fades. Hush darkens the world; the website lights the street.
+          var comp = byId("env-comp"), hush = byId("env-hush"), web = byId("env-web");
+          fade(comp, 0, 1, 0.5, C.competitorGlow, "power2.out"); T(byId("env-comp-glow"), { scale: 0.55 }, { scale: 1, duration: 0.75, ease: "power2.out" }, C.competitorGlow);
+          breathe(byId("env-comp-breath"), { opacity: 1 }, { opacity: 0.8 }, C.competitorGlow + 0.5, C.competitorGlow + 1.6, 0.27);
+          fade(comp, 1, 0, 0.9, C.competitorGlow + 1.0, "power1.inOut");
+          fade(hush, 0, 0.34, 0.3, C.hush[0], "power1.inOut"); fade(hush, 0.34, 0, 0.7, C.lineDrop[0], "power1.inOut");
+          fade(web, 0, 1, 0.6, C.webOn - 0.25, "power2.out"); fade(web, 1, 0.55, 1.5, SR0 + 0.5);
+
+          // ── 9. GRADE: dusk warmth out with nightfall, dawn warmth + backlit rooftop rims in (rims kept out of the headline zone)
+          var R = byId("env-rims");
+          fade(byId("env-grade-dusk"), 1, 0, 1.5, NF0); fade(byId("env-grade-dawn"), 0, 1, SR1 - SR0, SR0 + 0.1);
+          boxes(R, [
+            [0, 345, 146, 3, "linear-gradient(90deg,#f2a65a 0%,#f2a65a 55%,rgba(242,166,90,0) 64%)"], [948, 391, 132, 3, "linear-gradient(90deg,rgba(242,166,90,0) 28%,#f2a65a 38%)"],
+            [12, 309, 34, 2, "#f2a65a"], [998, 326, 66, 2, "#f2a65a", "border-radius:2px"], [137, 524, 3, 116, "rgba(242,166,90,0.6)"], [940, 524, 3, 116, "rgba(242,166,90,0.6)"]]);
+          fade(R, 0, 0.9, 1.4, SR0 + 0.6); fade(skyRim, 0, 0.9, 1.4, SR0 + 0.5);
+
+          window.__timelines["environment"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

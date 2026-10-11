@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>shop — the physical shopfront (below the line)</title>
+    <!--
+      SYRAZEN · shop (film 0 -> 12, track 2). The physical shopfront, shown below the seam
+      (--split from SYRAZEN_KIT.splitAt). Closing time: sign flip, lights off, night falls, camera push.
+    -->
+  </head>
+  <body>
+    <template id="shop-template">
+      <style>
+        @font-face {
+          font-family: "Archivo";
+          src: url("../assets/fonts/Archivo-Variable.woff2") format("woff2");
+          font-weight: 100 900;
+          font-stretch: 62% 125%;
+        }
+
+        #sh-root {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          font-family: "Archivo", sans-serif;
+          --split: 600px;
+        }
+        #sh-root .sh-abs {
+          position: absolute;
+          display: block;
+        }
+
+        /* ---------- world (camera) ---------- */
+        #sh-world {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          transform-origin: 540px 1560px;
+        }
+        #sh-shop {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          clip-path: inset(var(--split) 0px 0px 0px);
+        }
+
+        /* ---------- the physical shop ---------- */
+        #sh-contact {
+          left: 110px;
+          top: 1540px;
+          width: 860px;
+          height: 60px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+        }
+        #sh-spill {
+          left: 120px;
+          top: 1548px;
+          width: 840px;
+          height: 150px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(255, 196, 110, 0.55), rgba(255, 170, 80, 0) 100%);
+          filter: blur(6px);
+        }
+        #sh-facade {
+          left: 140px;
+          top: 640px;
+          width: 800px;
+          height: 920px;
+          background-color: #6b4a3c;
+          background-image: repeating-linear-gradient(0deg, rgba(30, 18, 14, 0.16) 0 3px, transparent 3px 36px),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 12%, rgba(0, 0, 0, 0) 88%, rgba(0, 0, 0, 0.22));
+        }
+        #sh-pilaster-l,
+        #sh-pilaster-r {
+          top: 700px;
+          width: 30px;
+          height: 860px;
+          background: #5a3d31;
+        }
+        #sh-pilaster-l {
+          left: 140px;
+        }
+        #sh-pilaster-r {
+          left: 910px;
+        }
+        #sh-cornice {
+          left: 124px;
+          top: 624px;
+          width: 832px;
+          height: 76px;
+          background: linear-gradient(180deg, #7a5646 0 14px, #4e352b 14px 62px, #3e2a22 62px 76px);
+          border-radius: 4px;
+        }
+        #sh-fascia {
+          left: 176px;
+          top: 708px;
+          width: 728px;
+          height: 78px;
+          background: #2b201c;
+          border-radius: 6px;
+          box-shadow: inset 0 0 0 4px #3d2d26;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #sh-fascia-text {
+          font-weight: 800;
+          font-stretch: 112%;
+          font-size: 50px;
+          letter-spacing: 0.06em;
+          color: #f3d9a4;
+          text-shadow: 0 0 18px rgba(255, 190, 100, 0.65);
+          line-height: 1;
+          white-space: nowrap;
+        }
+        #sh-awning {
+          left: 160px;
+          top: 790px;
+          width: 760px;
+          height: 92px;
+        }
+        #sh-awning-stripes {
+          left: 0;
+          top: 0;
+          width: 760px;
+          height: 70px;
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 40%),
+            repeating-linear-gradient(90deg, #efe3cf 0 47.5px, #a8643e 47.5px 95px);
+          border-radius: 6px 6px 0 0;
+        }
+        #sh-awning-scallop {
+          left: 0;
+          top: 70px;
+          width: 760px;
+          height: 22px;
+          background: radial-gradient(circle at 23.75px 0, #efe3cf 22px, transparent 23px) 0 0 / 95px 22px repeat-x,
+            radial-gradient(circle at 23.75px 0, #a8643e 22px, transparent 23px) 47.5px 0 / 95px 22px repeat-x;
+        }
+        #sh-awning-shadow {
+          left: 170px;
+          top: 872px;
+          width: 740px;
+          height: 40px;
+          background: linear-gradient(180deg, rgba(20, 10, 6, 0.45), rgba(20, 10, 6, 0));
+        }
+
+        /* window */
+        #sh-window {
+          left: 190px;
+          top: 900px;
+          width: 420px;
+          height: 420px;
+          border-radius: 6px;
+          overflow: hidden;
+          background: radial-gradient(120% 90% at 50% 35%, #ffd896 0%, #f1a85b 55%, #c9773c 100%);
+          box-shadow: 0 0 0 14px #4e352b, 0 0 0 18px #3a2820;
+        }
+        #sh-window-glass {
+          left: 0;
+          top: 0;
+          width: 420px;
+          height: 420px;
+          background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.16) 38%, rgba(255, 255, 255, 0) 46%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+        }
+        #sh-window-dark {
+          left: 0;
+          top: 0;
+          width: 420px;
+          height: 420px;
+          background: linear-gradient(115deg, rgba(16, 22, 42, 0.9) 30%, rgba(60, 74, 110, 0.86) 38%, rgba(16, 22, 42, 0.92) 46%), #10162a;
+          opacity: 0;
+        }
+        #sh-sill {
+          left: 172px;
+          top: 1334px;
+          width: 456px;
+          height: 20px;
+          background: #7d5847;
+          border-radius: 3px;
+        }
+        #sh-riser {
+          left: 190px;
+          top: 1366px;
+          width: 420px;
+          height: 180px;
+          background: #4e352b;
+          border-radius: 4px;
+          box-shadow: inset 0 0 0 16px #5a3d31, inset 0 0 0 20px #3e2a22;
+        }
+
+        /* goods (shared by shop window and website hero) */
+        .sh-goods {
+          left: 0;
+          top: 0;
+          width: 420px;
+          height: 420px;
+        }
+        .sh-goods .sh-g {
+          position: absolute;
+          display: block;
+        }
+        .sh-shelf {
+          position: absolute;
+          left: 0;
+          width: 420px;
+          height: 12px;
+          background: #7a4a2c;
+          box-shadow: 0 8px 14px rgba(70, 30, 10, 0.35);
+        }
+
+        /* door */
+        #sh-door {
+          left: 660px;
+          top: 900px;
+          width: 230px;
+          height: 660px;
+          background: #3c2a24;
+          border-radius: 6px 6px 0 0;
+          box-shadow: 0 0 0 12px #4e352b, 0 0 0 16px #3a2820;
+        }
+        #sh-door-glass {
+          left: 684px;
+          top: 930px;
+          width: 182px;
+          height: 300px;
+          border-radius: 4px;
+          background: radial-gradient(120% 90% at 50% 30%, #ffd896, #e89a52 70%, #c27238);
+          overflow: hidden;
+        }
+        #sh-door-glass-dark {
+          left: 0;
+          top: 0;
+          width: 182px;
+          height: 300px;
+          background: linear-gradient(115deg, #10162a 30%, #34405e 40%, #10162a 50%);
+          opacity: 0;
+        }
+        #sh-door-panel {
+          left: 684px;
+          top: 1262px;
+          width: 182px;
+          height: 250px;
+          border-radius: 4px;
+          box-shadow: inset 0 0 0 6px #33231e;
+        }
+        #sh-door-handle {
+          left: 842px;
+          top: 1220px;
+          width: 12px;
+          height: 64px;
+          border-radius: 6px;
+          background: #d8b47a;
+        }
+        #sh-step {
+          left: 640px;
+          top: 1556px;
+          width: 270px;
+          height: 16px;
+          background: #8a6a58;
+          border-radius: 2px;
+        }
+
+        /* hanging OPEN/CLOSED sign */
+        #sh-sign-nail {
+          left: 770px;
+          top: 952px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #d8b47a;
+        }
+        #sh-sign-hang {
+          left: 685px;
+          top: 957px;
+          width: 180px;
+          height: 120px;
+          transform-origin: 90px 0px;
+        }
+        #sh-sign-string {
+          left: 0;
+          top: 0;
+          width: 160px;
+          height: 40px;
+        }
+        #sh-sign-card {
+          left: 10px;
+          top: 34px;
+          width: 160px;
+          height: 80px;
+          transform-style: preserve-3d;
+        }
+        .sh-sign-face {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 160px;
+          height: 80px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-stretch: 100%;
+          letter-spacing: 0.04em;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+        }
+        #sh-sign-open {
+          background: #f6efe3;
+          color: #14161f;
+          font-size: 36px;
+        }
+        #sh-sign-closed {
+          background: #f6efe3;
+          color: #14161f;
+          font-size: 30px;
+          transform: rotateY(180deg);
+        }
+
+        /* lamp */
+        #sh-lamp {
+          left: 624px;
+          top: 860px;
+          width: 22px;
+          height: 34px;
+          border-radius: 6px 6px 10px 10px;
+          background: #2a1f1a;
+        }
+        #sh-lamp-bulb {
+          left: 627px;
+          top: 884px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #ffe2a8;
+        }
+        #sh-lamp-glow {
+          left: 535px;
+          top: 792px;
+          width: 200px;
+          height: 200px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(255, 210, 130, 0.75), rgba(255, 190, 100, 0) 100%);
+        }
+        #sh-shop-shade {
+          left: 124px;
+          top: 624px;
+          width: 832px;
+          height: 950px;
+          background: #0b0e18;
+          opacity: 0;
+        }
+        #sh-moonlight {
+          left: 124px;
+          top: 624px;
+          width: 832px;
+          height: 950px;
+          background: linear-gradient(200deg, rgba(150, 170, 220, 0.16), rgba(150, 170, 220, 0) 55%);
+          opacity: 0;
+        }
+      </style>
+
+      <div id="sh-root" data-composition-id="shop" data-width="1080" data-height="1920">
+        <div id="sh-world" class="sh-abs" data-layout-allow-overflow>
+          <!-- The physical shop: visible below the seam (--split). -->
+          <div id="sh-shop" class="sh-abs">
+            <div id="sh-contact" class="sh-abs"></div>
+            <div id="sh-spill" class="sh-abs"></div>
+            <div id="sh-facade" class="sh-abs"></div>
+            <div id="sh-pilaster-l" class="sh-abs"></div>
+            <div id="sh-pilaster-r" class="sh-abs"></div>
+            <div id="sh-cornice" class="sh-abs"></div>
+            <div id="sh-fascia" class="sh-abs"><span id="sh-fascia-text">YOUR BUSINESS</span></div>
+            <div id="sh-awning" class="sh-abs">
+              <div id="sh-awning-stripes" class="sh-abs"></div>
+              <div id="sh-awning-scallop" class="sh-abs"></div>
+            </div>
+            <div id="sh-awning-shadow" class="sh-abs"></div>
+            <div id="sh-window" class="sh-abs">
+              <div id="sh-goods-shop" class="sh-goods sh-abs"></div>
+              <div id="sh-window-glass" class="sh-abs"></div>
+              <div id="sh-window-dark" class="sh-abs"></div>
+            </div>
+            <div id="sh-sill" class="sh-abs"></div>
+            <div id="sh-riser" class="sh-abs"></div>
+            <div id="sh-door" class="sh-abs"></div>
+            <div id="sh-door-glass" class="sh-abs"><div id="sh-door-glass-dark" class="sh-abs"></div></div>
+            <div id="sh-door-panel" class="sh-abs"></div>
+            <div id="sh-door-handle" class="sh-abs"></div>
+            <div id="sh-step" class="sh-abs"></div>
+            <div id="sh-lamp-glow" class="sh-abs"></div>
+            <div id="sh-lamp" class="sh-abs"></div>
+            <div id="sh-lamp-bulb" class="sh-abs"></div>
+            <div id="sh-shop-shade" class="sh-abs"></div>
+            <div id="sh-moonlight" class="sh-abs"></div>
+            <div id="sh-sign-nail" class="sh-abs"></div>
+            <div id="sh-sign-hang" class="sh-abs">
+              <svg id="sh-sign-string" class="sh-abs" viewBox="0 0 180 40" width="180" height="40">
+                <path d="M90 2 L26 36 M90 2 L154 36" stroke="#d8b47a" stroke-width="3" fill="none" />
+              </svg>
+              <div id="sh-sign-card" class="sh-abs">
+                <div id="sh-sign-open" class="sh-sign-face">OPEN</div>
+                <div id="sh-sign-closed" class="sh-sign-face">CLOSED</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.SYRAZEN_KIT;
+          var $ = function (id) {
+            return document.getElementById(id);
+          };
+          var stage = $("sh-root");
+          var cue = function (n, i) {
+            return K.cue(n, i, 0);
+          };
+
+          /* ---------------- build: shelves + goods in the shop window (same goods as the website hero) */
+          var goodsHost = $("sh-goods-shop");
+          K.SHELVES.forEach(function (y) {
+            var s = document.createElement("span");
+            s.className = "sh-shelf";
+            s.style.top = y + "px";
+            goodsHost.appendChild(s);
+          });
+          K.GOODS.forEach(function (g) {
+            var el = document.createElement("span");
+            el.className = "sh-g";
+            el.style.left = g.x + "px";
+            el.style.top = g.y + "px";
+            el.style.width = g.w + "px";
+            el.style.height = g.h + "px";
+            el.style.borderRadius = g.r;
+            el.style.background = g.c;
+            goodsHost.appendChild(el);
+          });
+
+          /* ================= timeline ================= */
+          var tl = gsap.timeline({ paused: true });
+
+          /* --- the seam: the shop shows below --split, a pure function of film time (kit.js) */
+          var lastSplit = -1;
+          function applySplit(t) {
+            var y = Math.round(K.splitAt(t));
+            if (y === lastSplit) return;
+            lastSplit = y;
+            stage.style.setProperty("--split", y + "px");
+          }
+          applySplit(0);
+          K.driver(tl, 12, applySplit);
+
+          /* --- camera: slow push on the shop through the lonely night, released by the line */
+          K.cameraPush(tl, $("sh-world"));
+
+          /* --- beat 1: closing time */
+          tl.fromTo("#sh-sign-card", { rotationY: 0, transformPerspective: 600 }, { rotationY: 180, transformPerspective: 600, duration: 0.5, ease: "back.out(1.4)" }, cue("signFlip"));
+          tl.fromTo("#sh-sign-hang", { rotation: 0 }, { rotation: -9, duration: 0.18, ease: "power2.out" }, cue("signFlip"));
+          tl.fromTo("#sh-sign-hang", { rotation: -9 }, { rotation: 6, duration: 0.3, ease: "sine.inOut", immediateRender: false }, cue("signFlip") + 0.18);
+          tl.fromTo("#sh-sign-hang", { rotation: 6 }, { rotation: -3, duration: 0.3, ease: "sine.inOut", immediateRender: false }, cue("signFlip") + 0.48);
+          tl.fromTo("#sh-sign-hang", { rotation: -3 }, { rotation: 0, duration: 0.4, ease: "sine.out", immediateRender: false }, cue("signFlip") + 0.78);
+
+          var off0 = cue("lightsOff", 0),
+            off1 = cue("lightsOff", 1),
+            off2 = cue("lightsOff", 2);
+          tl.fromTo("#sh-window-dark", { opacity: 0 }, { opacity: 0.94, duration: 0.07, ease: "none" }, off0);
+          tl.fromTo("#sh-door-glass-dark", { opacity: 0 }, { opacity: 0.94, duration: 0.07, ease: "none" }, off0);
+          tl.fromTo("#sh-spill", { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "none" }, off0);
+          tl.fromTo("#sh-lamp-glow", { opacity: 1 }, { opacity: 0, duration: 0.07, ease: "none" }, off1);
+          tl.fromTo("#sh-lamp-bulb", { backgroundColor: "#ffe2a8" }, { backgroundColor: "#4a3a30", duration: 0.07, ease: "none" }, off1);
+          tl.fromTo(
+            "#sh-fascia-text",
+            { color: "#f3d9a4", textShadow: "0 0 18px rgba(255,190,100,0.65)" },
+            { color: "#a89474", textShadow: "0 0 0px rgba(255,190,100,0)", duration: 0.08, ease: "none" },
+            off2,
+          );
+          // night falls on the facade
+          var NF0 = cue("nightFall", 0),
+            NF1 = cue("nightFall", 1);
+          tl.fromTo("#sh-shop-shade", { opacity: 0.06 }, { opacity: 0.5, duration: NF1 - NF0, ease: "sine.inOut" }, NF0);
+          tl.fromTo("#sh-moonlight", { opacity: 0 }, { opacity: 1, duration: NF1 - NF0, ease: "sine.inOut" }, NF0);
+
+          window.__timelines["shop"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
