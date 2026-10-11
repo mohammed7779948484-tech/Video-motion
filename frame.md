@@ -48,8 +48,8 @@ outcome (found, open 24/7, customers while you sleep), never the process (no cod
 
 ## Composition rules
 - Every sub-composition is prefixed: ids and CSS selectors start with its scene prefix
-  (`env-`, `st-`, `lk-`) because all scene CSS is global after assembly. Each scene root uses a
-  unique id (`#env-root`, `#st-root`, `#lk-root`), never `#root`.
+  (`env-`, `sh-`, `wb-`, `sy-`, `lk-`) because all scene CSS is global after assembly. Each scene root uses a
+  unique id (`#env-root`, `#sh-root`, `#wb-root`, `#sy-root`, `#lk-root`), never `#root`.
 - `@font-face` must be declared inside each sub-composition `<template>` `<style>` with
   `url("../assets/fonts/…")` (lint requires in-file font-face).
 - Timing comes only from `window.SYRAZEN.cues` (assets/js/cues.js, generated from tools/cues.json).

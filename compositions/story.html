@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>story — clock, headlines, searching customers</title>
+    <!--
+      SYRAZEN · story (film 0 -> 12, track 4). The copy layer: the clock, the five headlines and the
+      customers searching at night (bubbles + the lone ring at the dark door).
+    -->
+  </head>
+  <body>
+    <template id="story-template">
+      <style>
+        @font-face {
+          font-family: "Archivo";
+          src: url("../assets/fonts/Archivo-Variable.woff2") format("woff2");
+          font-weight: 100 900;
+          font-stretch: 62% 125%;
+        }
+        @font-face {
+          font-family: "JetBrains Mono";
+          src: url("../assets/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+          font-weight: 100 800;
+        }
+
+        #sy-root {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          font-family: "Archivo", sans-serif;
+        }
+        #sy-root .sy-abs {
+          position: absolute;
+          display: block;
+        }
+
+        /* ---------- search bubbles ---------- */
+        .sy-bubble {
+          position: absolute;
+          display: block;
+          height: 64px;
+          padding: 0 26px 0 50px;
+          border-radius: 32px;
+          background: rgba(28, 34, 54, 0.94);
+          box-shadow: 0 0 0 2px rgba(246, 239, 227, 0.12), 0 14px 30px rgba(0, 0, 0, 0.35);
+          color: #f6efe3;
+          font-weight: 600;
+          font-stretch: 100%;
+          font-size: 30px;
+          line-height: 64px;
+          white-space: nowrap;
+          opacity: 0;
+        }
+        .sy-bubble .sy-bdot {
+          position: absolute;
+          left: 20px;
+          top: 24px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #ffb547;
+          box-shadow: 0 0 12px rgba(255, 181, 71, 0.9);
+        }
+        .sy-bwrap {
+          position: absolute;
+          left: 0;
+          width: 1080px;
+          height: 64px;
+          display: flex;
+          justify-content: center;
+        }
+        #sy-lone {
+          left: 735px;
+          top: 1190px;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          border: 3px solid rgba(255, 181, 71, 0.9);
+          opacity: 0;
+        }
+
+        /* ---------- headlines + clock ---------- */
+        #sy-hl {
+          left: 96px;
+          top: 300px;
+          width: 888px;
+          height: 230px;
+        }
+        .sy-hblock {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 888px;
+        }
+        .sy-mask {
+          display: block;
+          height: 112px;
+          overflow: hidden;
+        }
+        .sy-lin {
+          display: block;
+          font-weight: 800;
+          font-stretch: 112%;
+          font-size: 100px;
+          line-height: 108px;
+          letter-spacing: -0.025em;
+          color: #f6efe3;
+          white-space: nowrap;
+        }
+        .sy-amber {
+          color: #ffb547;
+        }
+        .sy-verm {
+          color: #ff5a2e;
+        }
+        #sy-clock {
+          left: 96px;
+          top: 206px;
+          height: 48px;
+          width: 300px;
+        }
+        #sy-clock-icon {
+          left: 0;
+          top: 10px;
+          width: 28px;
+          height: 28px;
+        }
+        #sy-clock-sun,
+        #sy-clock-moon {
+          left: 0;
+          top: 0;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+        }
+        #sy-clock-sun {
+          background: #ffb547;
+          box-shadow: 0 0 12px rgba(255, 181, 71, 0.8);
+        }
+        #sy-clock-moon {
+          background: radial-gradient(circle at 70% 35%, rgba(0, 0, 0, 0) 9px, #f6efe3 10px);
+          opacity: 0;
+        }
+        #sy-clock-text {
+          left: 44px;
+          top: 0;
+          font-family: "JetBrains Mono", monospace;
+          font-weight: 500;
+          font-size: 34px;
+          line-height: 48px;
+          letter-spacing: 0.04em;
+          color: #f6efe3;
+          white-space: nowrap;
+        }
+      </style>
+
+      <div id="sy-root" data-composition-id="story" data-width="1080" data-height="1920">
+        <!-- customers searching -->
+        <div id="sy-bubbles" class="sy-abs" style="left: 0; top: 0; width: 1080px; height: 1920px"></div>
+        <div id="sy-lone" class="sy-abs"></div>
+
+        <!-- headlines + clock -->
+        <div id="sy-clock" class="sy-abs">
+          <div id="sy-clock-icon" class="sy-abs">
+            <div id="sy-clock-sun" class="sy-abs"></div>
+            <div id="sy-clock-moon" class="sy-abs"></div>
+          </div>
+          <div id="sy-clock-text" class="sy-abs">17:59</div>
+        </div>
+        <div id="sy-hl" class="sy-abs"></div>
+      </div>
+
+      <script>
+        (function () {
+          var S = window.SYRAZEN;
+          var K = window.SYRAZEN_KIT;
+          var G = S.geometry;
+          var COPY = S.copy;
+          var $ = function (id) {
+            return document.getElementById(id);
+          };
+          var cue = function (n, i) {
+            return K.cue(n, i, 0);
+          };
+
+          /* ---------------- build: headlines (two masked lines each, hidden until their cue) */
+          var HL = {};
+          var HLB = {};
+          function buildHeadline(key, lines, accents) {
+            var block = document.createElement("div");
+            block.className = "sy-hblock";
+            block.id = "sy-" + key;
+            block.style.visibility = "hidden";
+            HLB[key] = block;
+            var inners = [];
+            lines.forEach(function (text, i) {
+              var mask = document.createElement("span");
+              mask.className = "sy-mask";
+              var inner = document.createElement("span");
+              inner.className = "sy-lin";
+              inner.setAttribute("data-layout-allow-overflow", ""); // masked rise: overflow is the effect
+              inner.setAttribute("data-layout-allow-overlap", ""); // swaps cross inside the same mask (h2 -> h3)
+              var acc = accents && accents[i];
+              if (acc) {
+                var idx = text.indexOf(acc.word);
+                inner.appendChild(document.createTextNode(text.slice(0, idx)));
+                var sp = document.createElement("span");
+                sp.className = acc.cls;
+                sp.textContent = acc.word;
+                inner.appendChild(sp);
+                inner.appendChild(document.createTextNode(text.slice(idx + acc.word.length)));
+              } else {
+                inner.textContent = text;
+              }
+              mask.appendChild(inner);
+              block.appendChild(mask);
+              inners.push(inner);
+            });
+            $("sy-hl").appendChild(block);
+            HL[key] = inners;
+          }
+          buildHeadline("h1", COPY.headline1, [null, { word: "6.", cls: "sy-amber" }]);
+          buildHeadline("h2", COPY.headline2);
+          buildHeadline("h3", COPY.headline3);
+          buildHeadline("h4", COPY.headline4, [null, { word: "open.", cls: "sy-verm" }]);
+          buildHeadline("h5", COPY.headline5, [null, { word: "new customers.", cls: "sy-amber" }]);
+
+          /* ---------------- build: search bubbles near each searcher's glow */
+          var BUBBLE_POS = {
+            s1: { left: 96, top: 676 },
+            s2: { right: 96, top: 756 },
+            s3: { left: 96, top: 1104 },
+            s4: { right: 96, top: 1186 },
+            s5: { center: 540, top: 1566 },
+          };
+          var bubbles = G.searchers.map(function (s) {
+            var b = document.createElement("div");
+            b.className = "sy-bubble";
+            b.id = "sy-bubble-" + s.id;
+            var dot = document.createElement("span");
+            dot.className = "sy-bdot";
+            b.appendChild(dot);
+            b.appendChild(document.createTextNode(s.label));
+            var p = BUBBLE_POS[s.id];
+            if (p.center !== undefined) {
+              var wrap = document.createElement("div");
+              wrap.className = "sy-bwrap";
+              wrap.style.top = p.top + "px";
+              b.style.position = "relative";
+              wrap.appendChild(b);
+              $("sy-bubbles").appendChild(wrap);
+            } else {
+              b.style.top = p.top + "px";
+              if (p.left !== undefined) b.style.left = p.left + "px";
+              if (p.right !== undefined) b.style.right = p.right + "px";
+              $("sy-bubbles").appendChild(b);
+            }
+            return { el: b, s: s };
+          });
+
+          /* ================= timeline ================= */
+          var tl = gsap.timeline({ paused: true });
+
+          /* --- clock driver: the time readout is a pure function of film time (discrete cue thresholds) */
+          var CLOCK = [
+            [0, "17:59"],
+            [cue("clockTick"), "18:00"],
+            [cue("clock2100"), "21:00"],
+            [cue("clock2330"), "23:30"],
+            [cue("clock0214"), "02:14"],
+            [cue("clock0447"), "04:47"],
+            [cue("clock0630"), "06:30"],
+          ];
+          var clockEl = $("sy-clock-text");
+          var lastClock = "";
+          K.driver(tl, 12, function (t) {
+            var txt = CLOCK[0][1];
+            for (var i = 0; i < CLOCK.length; i++) if (t >= CLOCK[i][0]) txt = CLOCK[i][1];
+            if (txt !== lastClock) {
+              clockEl.textContent = txt;
+              lastClock = txt;
+            }
+          });
+
+          /* --- headlines: masked line rises (waterfall), quicker exits; visibility hard-kills */
+          function hlIn(key, t) {
+            tl.set(HLB[key], { visibility: "visible" }, t);
+            HL[key].forEach(function (el, i) {
+              tl.fromTo(el, { yPercent: 105 }, { yPercent: 0, duration: 0.55, ease: "power4.out" }, t + i * 0.09);
+            });
+          }
+          function hlOut(key, t) {
+            tl.set(HLB[key], { visibility: "hidden" }, t + 0.36);
+            HL[key].forEach(function (el, i) {
+              tl.fromTo(el, { yPercent: 0 }, { yPercent: -105, duration: 0.3, ease: "power3.in", immediateRender: false }, t + i * 0.05);
+            });
+          }
+          ["h1", "h2", "h3", "h4", "h5"].forEach(function (k) {
+            HL[k].forEach(function (el) {
+              gsap.set(el, { yPercent: 105 });
+            });
+          });
+          hlIn("h1", cue("headline1In"));
+          hlOut("h1", cue("headline1Out"));
+          hlIn("h2", cue("headline2In"));
+          hlOut("h2", cue("headline2Swap"));
+          hlIn("h3", cue("headline2Swap") + 0.12);
+          hlOut("h3", cue("headline2Out"));
+          hlIn("h4", cue("headline4In"));
+          hlOut("h4", cue("headline4Out"));
+          hlIn("h5", cue("headline5In"));
+          hlOut("h5", cue("headline5Out") - 0.15);
+
+          // clock icon: sun -> moon -> sun
+          var NF0 = cue("nightFall", 0);
+          tl.fromTo("#sy-clock-sun", { opacity: 1 }, { opacity: 0, duration: 0.6, ease: "sine.inOut" }, NF0);
+          tl.fromTo("#sy-clock-moon", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.inOut" }, NF0 + 0.2);
+          tl.fromTo("#sy-clock-moon", { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "sine.inOut", immediateRender: false }, cue("clock0630") - 0.3);
+          tl.fromTo("#sy-clock-sun", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.inOut", immediateRender: false }, cue("clock0630") - 0.1);
+          tl.fromTo("#sy-clock", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.12);
+          tl.fromTo("#sy-clock-text", { scale: 1 }, { scale: 1.12, duration: 0.08, ease: "power2.out" }, cue("clockTick"));
+          tl.fromTo("#sy-clock-text", { scale: 1.12 }, { scale: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, cue("clockTick") + 0.08);
+
+          /* --- beat 2: customers keep looking, then leave */
+          var PL0 = cue("pingsLeave", 0),
+            PL1 = cue("pingsLeave", 1);
+          bubbles.forEach(function (b, i) {
+            var t = cue("searchPings", i);
+            tl.fromTo(b.el, { opacity: 0, scale: 0.6, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.42, ease: "back.out(1.7)" }, t);
+            // gentle bob while they wait
+            tl.fromTo(b.el, { y: 0 }, { y: -6, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, t + 0.42);
+            // drift away to the competitor at the right edge (accelerating exit)
+            var leave = PL0 + i * 0.12;
+            tl.fromTo(
+              b.el,
+              { x: 0, opacity: 1 },
+              { x: { left: 1000, right: 520, bottom: 760 }[b.s.side], opacity: 0, duration: PL1 - PL0 - 0.3, ease: "power2.in", immediateRender: false },
+              leave,
+            );
+          });
+          // lonely ring at the dark door
+          tl.fromTo("#sy-lone", { opacity: 0, scale: 0.4 }, { opacity: 0.9, scale: 1, duration: 0.2, ease: "power2.out" }, cue("lonePing"));
+          tl.fromTo("#sy-lone", { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 1.8, duration: 0.5, ease: "power2.out", immediateRender: false }, cue("lonePing") + 0.2);
+
+          /* --- the clock steps aside as the website card becomes the end card */
+          tl.fromTo("#sy-clock", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power1.in", immediateRender: false }, cue("morphToLockup", 0) - 0.2);
+
+          window.__timelines["story"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

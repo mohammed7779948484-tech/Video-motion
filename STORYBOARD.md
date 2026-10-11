@@ -14,7 +14,7 @@ music: original procedural score, 120 BPM, F minor → Ab major at the turn
 - poster: 1.4s
 - transition_in: cut
 - status: animated
-- src: compositions/street.html
+- src: compositions/shop.html (+ story.html for copy, environment.html for the world)
 - rules: spring-pop-entrance (sign swing settle), 3d flip via rotationY, ambient-glow-bloom (window light)
 
 "Your doors / close at 6." The owner recognises their own evening in the first second.
@@ -25,7 +25,7 @@ music: original procedural score, 120 BPM, F minor → Ab major at the turn
 - poster: 3.9s
 - transition_in: crossfade (headline swap)
 - status: animated
-- src: compositions/street.html (+ compositions/environment.html for sky, glows, competitor)
+- src: compositions/story.html (+ shop.html, environment.html for sky, glows, competitor)
 - rules: spring-pop-entrance (bubbles), nudge-curve (drift away), sine-wave-loop (glow breathing)
 
 "Customers / keep looking." → "…and find / someone else."
@@ -36,7 +36,7 @@ music: original procedural score, 120 BPM, F minor → Ab major at the turn
 - poster: 7.0s
 - transition_in: wipe (the line)
 - status: animated
-- src: compositions/street.html
+- src: compositions/website.html (+ shop.html below the line)
 - rules: clip-path reveal (techniques §12), ambient-glow-bloom, svg-path-draw (customer ping paths), motion-blur-streak (line)
 
 "A website / keeps you open." Customers' pings now fly into Book now.
@@ -47,7 +47,7 @@ music: original procedural score, 120 BPM, F minor → Ab major at the turn
 - poster: 10.8s
 - transition_in: crossfade (dawn)
 - status: animated
-- src: compositions/street.html
+- src: compositions/website.html (+ story.html)
 - rules: spring-pop-entrance (stagger ≤0.5s), waterfall-entry
 
 ## Frame 5 — SYRAZEN (brand)

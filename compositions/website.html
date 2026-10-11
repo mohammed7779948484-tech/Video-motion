@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>website — the shop's website (above the line)</title>
+    <!--
+      SYRAZEN · website (film 0 -> 12, track 3). The website skin, shown above the seam (--split from
+      SYRAZEN_KIT.splitAt), the line that draws the seam, customer pings, morning notifications,
+      and the cover that expands into the end card.
+    -->
+  </head>
+  <body>
+    <template id="website-template">
+      <style>
+        @font-face {
+          font-family: "Archivo";
+          src: url("../assets/fonts/Archivo-Variable.woff2") format("woff2");
+          font-weight: 100 900;
+          font-stretch: 62% 125%;
+        }
+        @font-face {
+          font-family: "JetBrains Mono";
+          src: url("../assets/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+          font-weight: 100 800;
+        }
+
+        #wb-root {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          font-family: "Archivo", sans-serif;
+          --split: 600px;
+        }
+        #wb-root .wb-abs {
+          position: absolute;
+          display: block;
+        }
+
+        /* ---------- glow behind the website card ---------- */
+        #wb-webglow {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          opacity: 0;
+          pointer-events: none;
+        }
+        #wb-webglow-halo {
+          left: 40px;
+          top: 520px;
+          width: 1000px;
+          height: 1180px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(255, 214, 160, 0.55), rgba(255, 190, 120, 0.18) 60%, rgba(255, 190, 120, 0) 100%);
+          filter: blur(30px);
+        }
+        #wb-webglow-pool {
+          left: 60px;
+          top: 1530px;
+          width: 960px;
+          height: 160px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(255, 228, 190, 0.6), rgba(255, 210, 160, 0) 100%);
+          filter: blur(10px);
+        }
+
+        /* ---------- world (camera) ---------- */
+        #wb-world {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          transform-origin: 540px 1560px;
+        }
+        #wb-web {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          clip-path: inset(0px 0px calc(1920px - var(--split)) 0px);
+        }
+
+        /* goods (shared by shop window and website hero) */
+        .wb-goods {
+          left: 0;
+          top: 0;
+          width: 420px;
+          height: 420px;
+        }
+        .wb-goods .wb-g {
+          position: absolute;
+          display: block;
+        }
+
+        /* ---------- the website (same geometry) ---------- */
+        #wb-card {
+          left: 140px;
+          top: 640px;
+          width: 800px;
+          height: 920px;
+          border-radius: 28px;
+          background: #f6efe3;
+          overflow: hidden;
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 30px 90px rgba(255, 180, 110, 0.28);
+        }
+        #wb-content {
+          left: 0;
+          top: 0;
+          width: 800px;
+          height: 920px;
+        }
+        #wb-bar {
+          left: 0;
+          top: 0;
+          width: 800px;
+          height: 64px;
+          background: #ebe2d3;
+        }
+        .wb-dot {
+          position: absolute;
+          top: 24px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #c9bda9;
+        }
+        #wb-url {
+          left: 150px;
+          top: 14px;
+          width: 500px;
+          height: 36px;
+          border-radius: 18px;
+          background: #f9f4ec;
+        }
+        #wb-lock {
+          left: 170px;
+          top: 24px;
+          width: 14px;
+          height: 16px;
+          border-radius: 3px;
+          background: #8f8576;
+        }
+        #wb-urlbar {
+          left: 196px;
+          top: 28px;
+          width: 220px;
+          height: 8px;
+          border-radius: 4px;
+          background: #d8cfc0;
+        }
+        #wb-nav {
+          left: 0;
+          top: 64px;
+          width: 800px;
+          height: 88px;
+          border-bottom: 2px solid #e4dacb;
+        }
+        #wb-logo {
+          left: 40px;
+          top: 24px;
+          font-weight: 800;
+          font-stretch: 125%;
+          font-size: 36px;
+          letter-spacing: -0.01em;
+          color: #14161f;
+          line-height: 1.1;
+          white-space: nowrap;
+        }
+        .wb-burger {
+          position: absolute;
+          left: 718px;
+          width: 42px;
+          height: 5px;
+          border-radius: 3px;
+          background: #14161f;
+        }
+        #wb-chips {
+          left: 40px;
+          top: 170px;
+          width: 720px;
+          height: 44px;
+          display: flex;
+          gap: 14px;
+        }
+        .wb-chip {
+          display: block;
+          height: 44px;
+          padding: 0 22px;
+          border-radius: 22px;
+          border: 2px solid #c9bda9;
+          font-weight: 600;
+          font-size: 26px;
+          line-height: 40px;
+          color: #3a3742;
+          white-space: nowrap;
+        }
+        #wb-hero {
+          left: 50px;
+          top: 260px;
+          width: 420px;
+          height: 420px;
+          border-radius: 22px;
+          overflow: hidden;
+          background: radial-gradient(120% 100% at 40% 30%, #fbe3c8, #f0c39c 70%, #e7ad84);
+        }
+        #wb-hero-zoom {
+          left: 0;
+          top: 0;
+          width: 420px;
+          height: 420px;
+          transform-origin: 210px 240px;
+        }
+        #wb-hero-tag {
+          left: 18px;
+          top: 18px;
+          height: 44px;
+          padding: 0 20px;
+          border-radius: 22px;
+          background: #e8431a;
+          color: #fff7ee;
+          font-weight: 700;
+          font-size: 26px;
+          line-height: 44px;
+          white-space: nowrap;
+        }
+        #wb-badge {
+          left: 528px;
+          top: 360px;
+          width: 214px;
+          height: 60px;
+          border-radius: 30px;
+          background: #14161f;
+          color: #f6efe3;
+          font-weight: 800;
+          font-stretch: 100%;
+          font-size: 26px;
+          letter-spacing: 0.03em;
+          line-height: 60px;
+          padding-left: 50px;
+          white-space: nowrap;
+        }
+        #wb-badge-dot {
+          left: 22px;
+          top: 20px;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #ff4a1c;
+          box-shadow: 0 0 12px rgba(255, 74, 28, 0.8);
+        }
+        .wb-btn {
+          position: absolute;
+          left: 528px;
+          width: 214px;
+          height: 90px;
+          border-radius: 45px;
+          font-weight: 800;
+          font-stretch: 112%;
+          font-size: 30px;
+          line-height: 90px;
+          text-align: center;
+          white-space: nowrap;
+        }
+        #wb-book {
+          top: 480px;
+          background: #e8431a;
+          color: #fff7ee;
+          box-shadow: 0 14px 30px rgba(255, 74, 28, 0.35);
+        }
+        #wb-call {
+          top: 600px;
+          border: 3px solid #14161f;
+          color: #14161f;
+          line-height: 84px;
+        }
+        #wb-find {
+          top: 720px;
+          border: 3px solid #14161f;
+          color: #14161f;
+          line-height: 84px;
+        }
+        #wb-map {
+          left: 50px;
+          top: 710px;
+          width: 420px;
+          height: 180px;
+          border-radius: 22px;
+          overflow: hidden;
+          background: #e3e7dc;
+        }
+        .wb-road {
+          position: absolute;
+          background: #fbfaf6;
+        }
+        #wb-pin {
+          left: 228px;
+          top: 44px;
+          width: 44px;
+          height: 60px;
+          transform-origin: 22px 58px;
+        }
+        #wb-pin-shadow {
+          left: 236px;
+          top: 96px;
+          width: 28px;
+          height: 10px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.18);
+        }
+        #wb-ripple {
+          left: 668px;
+          top: 1120px;
+          width: 214px;
+          height: 90px;
+          border-radius: 45px;
+          border: 4px solid #ff4a1c;
+          opacity: 0;
+        }
+
+        /* ---------- the line ---------- */
+        #wb-line {
+          left: 100px;
+          top: 0;
+          width: 880px;
+          height: 6px;
+          opacity: 0;
+          transform-origin: 440px 3px;
+        }
+        #wb-line-glow {
+          left: -40px;
+          top: -38px;
+          width: 960px;
+          height: 82px;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(255, 74, 28, 0.7), rgba(255, 74, 28, 0) 100%);
+        }
+        #wb-line-core {
+          left: 0;
+          top: 0;
+          width: 880px;
+          height: 6px;
+          border-radius: 3px;
+          background: linear-gradient(90deg, rgba(255, 74, 28, 0), #ff4a1c 6%, #ffd2b8 50%, #ff4a1c 94%, rgba(255, 74, 28, 0));
+          box-shadow: 0 0 14px 3px rgba(255, 74, 28, 0.85);
+        }
+
+        /* ---------- customer pings flying in ---------- */
+        .wb-ping {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 26px;
+          height: 26px;
+          margin: -13px 0 0 -13px;
+          border-radius: 50%;
+          background: #ffb547;
+          box-shadow: 0 0 18px 6px rgba(255, 181, 71, 0.7);
+          opacity: 0;
+        }
+        .wb-trail {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 14px;
+          height: 14px;
+          margin: -7px 0 0 -7px;
+          border-radius: 50%;
+          background: #ffcf85;
+          opacity: 0;
+        }
+
+        /* ---------- notifications ---------- */
+        .wb-note {
+          position: absolute;
+          display: block;
+          left: 230px;
+          width: 620px;
+          height: 100px;
+          border-radius: 26px;
+          background: #fffbf4;
+          box-shadow: 0 18px 40px rgba(20, 22, 31, 0.28), 0 0 0 2px rgba(20, 22, 31, 0.06);
+          opacity: 0;
+        }
+        .wb-note-icon {
+          position: absolute;
+          left: 22px;
+          top: 22px;
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          background: #ff4a1c;
+        }
+        .wb-note-icon svg {
+          position: absolute;
+          left: 12px;
+          top: 12px;
+          width: 32px;
+          height: 32px;
+        }
+        .wb-note-label {
+          position: absolute;
+          left: 100px;
+          top: 0;
+          font-weight: 700;
+          font-size: 34px;
+          line-height: 100px;
+          color: #14161f;
+          white-space: nowrap;
+        }
+        .wb-note-time {
+          position: absolute;
+          right: 28px;
+          top: 0;
+          font-family: "JetBrains Mono", monospace;
+          font-weight: 500;
+          font-size: 28px;
+          line-height: 100px;
+          color: #5e5a66;
+        }
+
+        /* ---------- morph to end card ---------- */
+        #wb-scrim {
+          left: 140px;
+          top: 640px;
+          width: 800px;
+          height: 920px;
+          border-radius: 28px;
+          background: #f6efe3;
+          opacity: 0;
+        }
+        #wb-cover {
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          background: #f6efe3;
+          clip-path: inset(640px 140px 360px 140px round 28px);
+          opacity: 0;
+        }
+      </style>
+
+      <div id="wb-root" data-composition-id="website" data-width="1080" data-height="1920">
+        <div id="wb-world" class="wb-abs" data-layout-allow-overflow>
+          <!-- The website: visible above the seam (--split); its light is revealed with it. -->
+          <div id="wb-web" class="wb-abs">
+            <div id="wb-webglow" class="wb-abs" data-layout-ignore>
+              <div id="wb-webglow-halo" class="wb-abs"></div>
+              <div id="wb-webglow-pool" class="wb-abs"></div>
+            </div>
+            <div id="wb-card" class="wb-abs">
+              <div id="wb-content" class="wb-abs">
+                <div id="wb-bar" class="wb-abs">
+                  <span class="wb-dot" style="left: 30px"></span>
+                  <span class="wb-dot" style="left: 58px"></span>
+                  <span class="wb-dot" style="left: 86px"></span>
+                  <div id="wb-url" class="wb-abs"></div>
+                  <div id="wb-lock" class="wb-abs"></div>
+                  <div id="wb-urlbar" class="wb-abs"></div>
+                </div>
+                <div id="wb-nav" class="wb-abs">
+                  <div id="wb-logo" class="wb-abs">Your Business</div>
+                  <span class="wb-burger" style="top: 30px"></span>
+                  <span class="wb-burger" style="top: 42px"></span>
+                  <span class="wb-burger" style="top: 54px"></span>
+                </div>
+                <div id="wb-chips" class="wb-abs">
+                  <span class="wb-chip">Shop</span>
+                  <span class="wb-chip">Gallery</span>
+                  <span class="wb-chip">Contact</span>
+                </div>
+                <div id="wb-hero" class="wb-abs">
+                  <div id="wb-hero-zoom" class="wb-abs"><div id="wb-goods-web" class="wb-goods wb-abs"></div></div>
+                  <div id="wb-hero-tag" class="wb-abs">Order online</div>
+                </div>
+                <div id="wb-badge" class="wb-abs"><span id="wb-badge-dot" class="wb-abs"></span>OPEN 24/7</div>
+                <div id="wb-book" class="wb-btn">Book now</div>
+                <div id="wb-call" class="wb-btn">Call us</div>
+                <div id="wb-find" class="wb-btn">Find us</div>
+                <div id="wb-map" class="wb-abs">
+                  <span class="wb-road" style="left: 0; top: 70px; width: 420px; height: 18px"></span>
+                  <span class="wb-road" style="left: 120px; top: 0; width: 16px; height: 180px"></span>
+                  <span class="wb-road" style="left: 300px; top: 0; width: 22px; height: 180px; transform: rotate(14deg)"></span>
+                  <span class="wb-road" style="left: 0; top: 140px; width: 420px; height: 10px"></span>
+                  <span id="wb-pin-shadow" class="wb-abs"></span>
+                  <svg id="wb-pin" class="wb-abs" viewBox="0 0 44 60" width="44" height="60">
+                    <path d="M22 58 C22 58 2 34 2 21 A20 20 0 0 1 42 21 C42 34 22 58 22 58 Z" fill="#ff4a1c" />
+                    <circle cx="22" cy="21" r="8" fill="#fff7ee" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div id="wb-ripple" class="wb-abs"></div>
+          </div>
+
+          <!-- The line (rides the seam, unclipped) -->
+          <div id="wb-line" class="wb-abs" data-layout-ignore>
+            <div id="wb-line-glow" class="wb-abs"></div>
+            <div id="wb-line-core" class="wb-abs"></div>
+          </div>
+        </div>
+
+        <!-- customers arriving -->
+        <div id="wb-pings" class="wb-abs" style="left: 0; top: 0; width: 1080px; height: 1920px"></div>
+
+        <!-- notifications -->
+        <div id="wb-scrim" class="wb-abs"></div>
+        <div id="wb-notes" class="wb-abs" style="left: 0; top: 0; width: 1080px; height: 1920px"></div>
+
+        <!-- website card expands into the end card -->
+        <div id="wb-cover" class="wb-abs"></div>
+      </div>
+
+      <script>
+        (function () {
+          var S = window.SYRAZEN;
+          var K = window.SYRAZEN_KIT;
+          var G = S.geometry;
+          var COPY = S.copy;
+          var $ = function (id) {
+            return document.getElementById(id);
+          };
+          var stage = $("wb-root");
+          var cue = function (n, i) {
+            return K.cue(n, i, 0);
+          };
+
+          /* ---------------- build: the shop's goods, now in the website hero (no shelves) */
+          var goodsHost = $("wb-goods-web");
+          K.GOODS.forEach(function (g) {
+            var el = document.createElement("span");
+            el.className = "wb-g";
+            el.style.left = g.x + "px";
+            el.style.top = g.y + "px";
+            el.style.width = g.w + "px";
+            el.style.height = g.h + "px";
+            el.style.borderRadius = g.r;
+            el.style.background = g.c;
+            goodsHost.appendChild(el);
+          });
+
+          /* ---------------- build: customer pings (dot + trail) */
+          var PING_FROM = ["s1", "s2", "s3", "s4"];
+          var TRAIL = 7;
+          var pings = PING_FROM.map(function (sid, i) {
+            var s = G.searchers.filter(function (q) {
+              return q.id === sid;
+            })[0];
+            var trail = [];
+            for (var k = 0; k < TRAIL; k++) {
+              var t = document.createElement("span");
+              t.className = "wb-trail";
+              $("wb-pings").appendChild(t);
+              trail.push(t);
+            }
+            var d = document.createElement("span");
+            d.className = "wb-ping";
+            d.id = "wb-ping-" + i;
+            $("wb-pings").appendChild(d);
+            var bx = G.bookButton.cx,
+              by = G.bookButton.cy;
+            var cx = (s.x + bx) / 2 + (s.x < 540 ? -60 : 60);
+            var cy = Math.min(s.y, by) - 260;
+            return { dot: d, trail: trail, p0: [s.x, s.y], p1: [cx, cy], p2: [bx, by] };
+          });
+          function bez(p, t) {
+            var u = 1 - t;
+            return [
+              u * u * p.p0[0] + 2 * u * t * p.p1[0] + t * t * p.p2[0],
+              u * u * p.p0[1] + 2 * u * t * p.p1[1] + t * t * p.p2[1],
+            ];
+          }
+
+          /* ---------------- build: notifications */
+          var ICONS = [
+            '<svg viewBox="0 0 32 32"><rect x="5" y="7" width="22" height="20" rx="4" fill="none" stroke="#fff7ee" stroke-width="3"/><path d="M5 13h22M11 4v6M21 4v6" stroke="#fff7ee" stroke-width="3" stroke-linecap="round"/></svg>',
+            '<svg viewBox="0 0 32 32"><path d="M7 11h18l-2 16H9z" fill="none" stroke="#fff7ee" stroke-width="3" stroke-linejoin="round"/><path d="M12 11a4 4 0 0 1 8 0" fill="none" stroke="#fff7ee" stroke-width="3"/></svg>',
+            '<svg viewBox="0 0 32 32"><path d="M5 8h22v14H13l-6 5v-5H5z" fill="none" stroke="#fff7ee" stroke-width="3" stroke-linejoin="round"/></svg>',
+            '<svg viewBox="0 0 32 32"><rect x="4" y="8" width="24" height="17" rx="3" fill="none" stroke="#fff7ee" stroke-width="3"/><path d="M5 10l11 8 11-8" fill="none" stroke="#fff7ee" stroke-width="3" stroke-linejoin="round"/></svg>',
+          ];
+          var NOTE_TOP0 = 724,
+            NOTE_STEP = 116;
+          var notes = COPY.notifications.map(function (n, i) {
+            var el = document.createElement("div");
+            el.className = "wb-note";
+            el.id = "wb-note-" + i;
+            el.style.top = NOTE_TOP0 + i * NOTE_STEP + "px";
+            el.innerHTML =
+              '<span class="wb-note-icon">' +
+              ICONS[i] +
+              '</span><span class="wb-note-label"></span><span class="wb-note-time"></span>';
+            el.querySelector(".wb-note-label").textContent = n.label;
+            el.querySelector(".wb-note-time").textContent = n.time;
+            $("wb-notes").appendChild(el);
+            return el;
+          });
+
+          /* ================= timeline ================= */
+          var tl = gsap.timeline({ paused: true });
+
+          /* --- the seam: --split and the line position are one pure function of film time (kit.js),
+                 shared with shop.html so the seam can never drift */
+          var lineEl = $("wb-line");
+          var L0 = cue("lineDrop", 0),
+            L1 = cue("lineDrop", 1);
+          var lastSplit = -1;
+          function applySplit(t) {
+            var y = Math.round(K.splitAt(t));
+            if (y === lastSplit) return;
+            lastSplit = y;
+            stage.style.setProperty("--split", y + "px");
+            gsap.set(lineEl, { y: Math.min(y, 1600) - 3 });
+          }
+          applySplit(0);
+          K.driver(tl, 12, applySplit);
+
+          // line appears as a spark that stretches open, then rides down
+          tl.fromTo(lineEl, { opacity: 0, scaleX: 0.02 }, { opacity: 1, scaleX: 1, duration: 0.22, ease: "expo.out" }, L0 - 0.12);
+          tl.fromTo(lineEl, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "power1.in", immediateRender: false }, L1 - 0.04);
+
+          /* --- camera: the same push as the shop, so the two layers stay locked */
+          K.cameraPush(tl, $("wb-world"));
+
+          /* --- beat 3: the website comes alive */
+          var WEB = cue("webOn");
+          tl.fromTo("#wb-webglow", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, WEB - 0.2);
+          tl.fromTo("#wb-card", { boxShadow: "0 0 0 2px rgba(255,255,255,0.5), 0 30px 90px rgba(255,180,110,0.0)" }, { boxShadow: "0 0 0 2px rgba(255,255,255,0.5), 0 30px 90px rgba(255,180,110,0.45)", duration: 0.6, ease: "power2.out" }, WEB);
+          // badge: pop + breathing dot
+          tl.fromTo("#wb-badge", { scale: 0.7 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, cue("badgePulse") - 0.1);
+          tl.fromTo("#wb-badge-dot", { scale: 1, opacity: 1 }, { scale: 1.35, opacity: 0.55, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 9 }, cue("badgePulse"));
+          // map pin drops in, then breathes
+          tl.fromTo("#wb-pin", { y: -40, scaleY: 1 }, { y: 0, duration: 0.45, ease: "bounce.out" }, WEB + 0.25);
+          tl.fromTo("#wb-pin", { scale: 1 }, { scale: 1.08, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 5, immediateRender: false }, WEB + 0.8);
+          // hero products slow push (the shop's goods, now online)
+          tl.fromTo("#wb-hero-zoom", { scale: 1 }, { scale: 1.08, duration: 11.2 - WEB, ease: "sine.inOut" }, WEB);
+          tl.fromTo("#wb-hero-tag", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, WEB + 0.35);
+
+          // customers arrive at "Book now"
+          var BOOK = $("wb-book");
+          pings.forEach(function (p, i) {
+            var t0 = cue("pingsArrive", i) - 0.55;
+            var pr = { t: 0 };
+            function place() {
+              var t = pr.t;
+              var a = bez(p, t);
+              gsap.set(p.dot, { x: a[0], y: a[1], opacity: t <= 0 || t >= 1 ? 0 : 1 });
+              for (var k = 0; k < TRAIL; k++) {
+                var tk = t - (k + 1) * 0.045;
+                var b = bez(p, Math.max(0, tk));
+                var vis = tk > 0 && t < 1 ? (1 - k / TRAIL) * 0.7 : 0;
+                gsap.set(p.trail[k], { x: b[0], y: b[1], opacity: vis, scale: 1 - k * 0.1 });
+              }
+            }
+            place();
+            tl.fromTo(pr, { t: 0 }, { t: 1, duration: 0.55, ease: "power2.in", onUpdate: place, immediateRender: false }, t0);
+            var hit = cue("pingsArrive", i);
+            tl.fromTo(BOOK, { scale: 1 }, { scale: 0.93, duration: 0.06, ease: "power2.in", immediateRender: false }, hit);
+            tl.fromTo(BOOK, { scale: 0.93 }, { scale: 1, duration: 0.24, ease: "back.out(3)", immediateRender: false }, hit + 0.06);
+            tl.fromTo("#wb-ripple", { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 1.45, duration: 0.32, ease: "power2.out", immediateRender: false }, hit);
+          });
+
+          /* --- beat 4: wake up to new customers */
+          tl.fromTo("#wb-scrim", { opacity: 0 }, { opacity: 0.55, duration: 0.5, ease: "sine.inOut" }, cue("notifications", 0) - 0.1);
+          notes.forEach(function (el, i) {
+            var t = cue("notifications", i);
+            tl.fromTo(el, { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, t);
+            tl.fromTo(el.querySelector(".wb-note-icon"), { scale: 0.4 }, { scale: 1, duration: 0.4, ease: "back.out(2.4)" }, t + 0.08);
+          });
+
+          /* --- beat 5: the website card becomes the end card, with no dead air before the impact.
+                 The cover (topmost in this scene, above card, scrim and notifications) crossfades in
+                 on the card rect while its clip opens, accelerating into full frame at M1. */
+          var M0 = cue("morphToLockup", 0),
+            M1 = cue("morphToLockup", 1);
+          tl.fromTo("#wb-cover", { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "power1.out" }, M0);
+          tl.fromTo(
+            "#wb-cover",
+            { clipPath: "inset(640px 140px 360px 140px round 28px)" },
+            { clipPath: "inset(0px 0px 0px 0px round 0px)", duration: M1 - M0, ease: "power3.in" },
+            M0,
+          );
+
+          window.__timelines["website"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

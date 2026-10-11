@@ -16,17 +16,29 @@ window.SYRAZEN = {
       "file": "compositions/environment.html",
       "track": 1
     },
-    "street": {
+    "shop": {
       "start": 0.0,
       "end": 12.0,
-      "file": "compositions/street.html",
+      "file": "compositions/shop.html",
       "track": 2
+    },
+    "website": {
+      "start": 0.0,
+      "end": 12.0,
+      "file": "compositions/website.html",
+      "track": 3
+    },
+    "story": {
+      "start": 0.0,
+      "end": 12.0,
+      "file": "compositions/story.html",
+      "track": 4
     },
     "lockup": {
       "start": 11.9,
       "end": 15.0,
       "file": "compositions/lockup.html",
-      "track": 3
+      "track": 5
     }
   },
   "geometry": {
