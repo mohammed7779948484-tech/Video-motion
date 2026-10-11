@@ -211,7 +211,7 @@ window.SYRAZEN = {
     ],
     "clock0630": 9.0,
     "headline5In": 9.0,
-    "headline5Out": 11.45,
+    "headline5Out": 11.4,
     "notifications": [
       9.25,
       9.65,
@@ -219,8 +219,8 @@ window.SYRAZEN = {
       10.45
     ],
     "morphToLockup": [
-      11.45,
-      12.0
+      11.4,
+      11.88
     ],
     "impact": 12.0,
     "taglineIn": 12.45,

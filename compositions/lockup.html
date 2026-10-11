@@ -196,7 +196,7 @@
 
           // 1. THE LINE slams across on the hit, leading with its Z-angled blade end.
           // Parked a full width + 200u to the left so not even an antialiased tip touches the clip edge.
-          tl.fromTo(accent, { x: -(WM_W + 200) }, { x: 0, duration: 0.42, ease: "expo.out" }, IMPACT);
+          tl.fromTo(accent, { x: -(WM_W + 200) }, { x: 0, duration: 0.34, ease: "expo.out" }, IMPACT);
 
           // 2. Letters rise out of the baseline in the line's wake (mask = clipPath at the baseline).
           tl.fromTo(
@@ -228,7 +228,7 @@
           tl.fromTo(
             "#lk-glow",
             { scaleX: 0.06, transformOrigin: "0% 50%" },
-            { scaleX: 1, duration: 0.42, ease: "expo.out" },
+            { scaleX: 1, duration: 0.34, ease: "expo.out" },
             IMPACT
           );
           tl.fromTo("#lk-glow", { opacity: 0 }, { opacity: 1, duration: 0.24, ease: "power2.out" }, IMPACT + 0.02);
