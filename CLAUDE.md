@@ -6,10 +6,17 @@
 - The purpose is an **original, professionally art-directed motion graphics film**, not a live-action, stock-footage, or photo-montage advertisement.
 
 ## Framework and environment
-- HyperFrames is the composition/rendering framework. Read `.claude/skills/hyperframes/SKILL.md` first, follow its routing guidance, and load only the relevant domain/workflow skills from `.claude/skills/`. Skills contain the detailed API and animation rules; do not duplicate them here.
+- HyperFrames is the composition/rendering framework. **Always start with `/hyperframes`** (or read `.claude/skills/hyperframes/SKILL.md` if slash invocation is unavailable). Let its router select the appropriate workflow; do not force `/motion-graphics` solely because the deliverable is a motion-graphics ad. Before authoring, load `hyperframes-core` and the relevant animation/creative/CLI skills. Consult their contracts rather than coding from generic web-animation assumptions.
 - Work within this existing repository and preserve its `index.html`, `hyperframes.json`, `meta.json`, and pinned `package.json` setup unless a change is justified by the approved production plan.
 - During implementation, use the project's pinned commands: `npm run check` and `npm run render`. Verify Node.js 22+ and FFmpeg in the cloud environment before rendering; install missing dependencies only when execution is authorized.
 - Final-render dependencies (fonts, code, audio, visuals) must be locally available and licensed. Do not depend on live network requests during frame rendering.
+
+## HyperFrames production invariants
+- Keep the composition structure native: timed clips use `data-start` and a valid duration; full-frame visual clips use `class="clip"`; reusable scene files are mounted with `data-composition-src`. HyperFrames owns clip visibility and media playback.
+- Register a **paused, seekable GSAP root timeline** under `window.__timelines[compositionId]` with the matching `data-composition-id`. Consult `hyperframes-core/references/determinism-rules.md` before implementing timelines; avoid wall-clock timers, unseeded randomness, and render-time fetches.
+- While implementing, use `npx hyperframes lint` for fast feedback and `npm run check` after composition changes; resolve errors and inspect warnings. Use `npx hyperframes timeline --json` when auditing scene timing.
+- For an agent-operated Studio preview, use `npx hyperframes preview --background`, verify with `npx hyperframes preview --status`, and stop with `npx hyperframes preview --stop` when appropriate. After approval and checks, render with `npm run render`; verify the resulting MP4 visually and audibly.
+
 
 ## Creative ownership
 - **Invent the concept yourself.** Determine the audience insight, core message, visual hook, storytelling structure, design language, pacing, sound, and appropriate production techniques from the user's brief. Make strong editorial choices rather than asking the user to design the film for you.
