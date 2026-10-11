@@ -199,10 +199,10 @@ window.SYRAZEN = {
     "headline4Out": 8.85,
     "badgePulse": 6.9,
     "pingsArrive": [
-      7.2,
-      7.55,
-      7.9,
-      8.25
+      7.25,
+      7.75,
+      8.25,
+      8.75
     ],
     "clock0447": 7.6,
     "sunrise": [
@@ -213,10 +213,10 @@ window.SYRAZEN = {
     "headline5In": 9.0,
     "headline5Out": 11.4,
     "notifications": [
-      9.25,
-      9.65,
-      10.05,
-      10.45
+      9.0,
+      9.5,
+      10.0,
+      10.5
     ],
     "morphToLockup": [
       11.4,
