@@ -25,17 +25,9 @@
 - Avoid generic template reels, arbitrary decorative 3D, device carousels, empty effects, and UI that exists only to fill the frame. Motion, visuals, and sound should serve one coherent idea.
 - Do not invent client work, testimonials, awards, performance figures, endorsements, or brand claims. Use only assets and factual claims the user provides or explicitly authorizes.
 
-## Plan Mode — plan, do not produce
-- In **Plan Mode**, inspect the repository and read relevant skills and docs **without modifying files, installing dependencies, scaffolding, or rendering**. The existing blank composition is a starting point, not a creative brief: its 1920×1080 size, 10-second duration, and `Title` text are placeholders.
-- Own the creative exploration. Evaluate distinct directions internally and present **one strongest recommended concept**, with a concise rationale and relevant trade-offs. Do not recycle a known ad structure merely because it is familiar.
-- Produce an actionable production plan that connects:
-  - **Strategy:** who the ad is for, what it communicates, and why the idea is compelling.
-  - **Storytelling:** opening visual hook, progression, reveal/payoff, brand/CTA, proposed on-screen copy, and approximate shot/beat timings.
-  - **Art and sound direction:** visual system, motion language, typography, audio approach, and intended viewer experience.
-  - **Engineering:** proposed HyperFrames scene/sub-composition boundaries, file organization, reusable components, asset generation, timeline and render approach.
-  - **Verification:** preview/still inspection, mobile readability where relevant, sound sync, technical checks, production risks, and definition of done.
-- Recommend duration, aspect ratio, and frame rate when the brief does not specify them; **do not silently treat the blank scaffold defaults as requirements**.
-- End Plan Mode with the plan and decisions that genuinely need approval. Do not start implementation until the user accepts the plan and execution is enabled.
+## Creative planning quality
+- The blank scaffold's 1920×1080 canvas, 10-second duration, and placeholder `Title` are not creative or delivery requirements; use the user's actual brief.
+- When asked to propose a film, present the strongest original concept with a coherent story arc, approximate beats, visual/audio direction, realistic HyperFrames scene and file architecture, dependencies, risks, and verification strategy. Prefer a decisive recommendation over a menu of generic options. Let Claude Code's native permission modes and approval flow govern the transition from planning to implementation.
 
 ## Execution and verification
 - After approval, implement the agreed direction with HyperFrames. Organize the film into maintainable scenes/sub-compositions and shared utilities where they add value; keep a single deterministic, seekable timeline.
